@@ -1,4 +1,6 @@
 <template>
-  <NuxtRouteAnnouncer />
-  <NuxtPage />
+  <div class="bg-foreground">
+    <NuxtRouteAnnouncer />
+    <NuxtPage />
+  </div>
 </template>
