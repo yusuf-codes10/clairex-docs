@@ -5,12 +5,12 @@ console.log("docs: ", docs.value);
 </script>
 
 <template>
-  <div class="bg-[#0D0D0D] min-h-screen px-6 py-12 flex flex-col items-center">
+  <div class="bg-background min-h-screen px-6 py-12 flex flex-col items-center">
     <div class="w-full max-w-2xl">
       <h2
-        class="font-mono text-xs text-[#C0392B] uppercase tracking-widest mb-6"
+        class="font-mono text-xs uppercase tracking-widest mb-6"
       >
-        // all articles
+        docs
       </h2>
 
       <ArticleCard v-for="doc in docs" :key="doc.id" :doc="doc" />
