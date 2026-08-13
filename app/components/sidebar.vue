@@ -64,14 +64,10 @@ const sections: SidebarSection[] = [
   },
 ]
 
-const openSections = ref<Set<number>>(new Set([0]))
+const openSections = ref<Record<number, boolean>>({ 0: true, 1: true })
 
 function toggle(index: number): void {
-  if (openSections.value.has(index)) {
-    openSections.value.delete(index)
-  } else {
-    openSections.value.add(index)
-  }
+  openSections.value[index] = !openSections.value[index]
 }
 </script>
 
@@ -90,12 +86,12 @@ function toggle(index: number): void {
               name="lucide:chevron-right"
               size="16"
               class="transition-transform duration-200 text-muted-foreground"
-              :class="{ 'rotate-90': openSections.has(index) }"
+              :class="{ 'rotate-90': openSections[index] }"
             />
           </button>
 
           <!-- Children -->
-          <ul v-show="openSections.has(index)" class="ml-3 mt-1 flex flex-col gap-0.5 border-l border-border pl-3">
+          <ul v-show="openSections[index]" class="ml-3 mt-1 flex flex-col gap-0.5 border-l border-border pl-3">
             <li v-for="child in section.children" :key="child.path">
               <NuxtLink
                 :to="child.path"
