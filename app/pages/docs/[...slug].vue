@@ -1,8 +1,9 @@
 <script setup lang="ts">
-const { slug } = useRoute().params;
+const route = useRoute();
+const slug = route.params.slug;
 const path = Array.isArray(slug) ? slug.join('/') : slug;
 
-const { data: doc } = await useAsyncData(() =>
+const { data: doc } = await useAsyncData(`doc-${path}`, () =>
   queryCollection("docs").path(`/docs/${path}`).first(),
 );
 </script>

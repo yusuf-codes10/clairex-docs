@@ -5,7 +5,10 @@ export default defineContentConfig({
   collections: {
     docs: defineCollection({
       type: 'page',
-      source: 'docs/**',
+      source: {
+        include: 'docs/**',
+        prefix: '/docs',
+      },
     }),
   },
 })
