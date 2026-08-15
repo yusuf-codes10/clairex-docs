@@ -16,7 +16,7 @@
         Classes you instantiate. Types you declare. Validation that's built in.
       </p>
       <div class="flex gap-4 mt-2">
-        <NuxtLink to="/docs" class="px-5 py-2.5 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:bg-primary-hover transition-colors">
+        <NuxtLink to="docs/getting-started/introduction" class="px-5 py-2.5 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:bg-primary-hover transition-colors">
           Get Started
         </NuxtLink>
         <a href="https://github.com/yusuf-codes10/clairex-core" target="_blank" class="px-5 py-2.5 rounded-md border border-border text-foreground text-sm font-medium hover:bg-accent transition-colors">
