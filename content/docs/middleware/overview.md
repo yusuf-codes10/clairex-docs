@@ -1,56 +1,86 @@
 # Middleware Overview
 
-`ClaireMiddleware` is an abstract class with two hooks: `before()` and `after()`. Middleware runs in an onion model — before hooks execute outside-in, after hooks execute inside-out.
+`ClaireMiddleware` is an abstract class for creating reusable logic that runs before and/or after route handlers. Extend it, override `before()` and/or `after()`, and attach it globally, to a key, or to a single route.
 
-## Defining Middleware
+## Class Signature
 
 ```ts
-import { ClaireMiddleware, ClaireContext } from 'clairex-core'
+abstract class ClaireMiddleware {
+  before(ctx: ClaireContext): void | Response | Promise<void | Response>
+  after(ctx: ClaireContext, response: Response): Response | Promise<Response>
+}
+```
 
-class AuthMiddleware extends ClaireMiddleware {
-  async before(ctx: ClaireContext): Promise<Response | void> {
-    const token = ctx.request.headers['authorization']
+## Creating a Middleware
+
+Extend `ClaireMiddleware` and override the hooks you need:
+
+```ts
+import { ClaireMiddleware } from 'clairex-core/core/middleware'
+import { ClaireContext } from 'clairex-core/core/context'
+
+export class AuthGuard extends ClaireMiddleware {
+  override before(c: ClaireContext): void | Response {
+    const token = c.request.headers['authorization']
     if (!token) {
-      return ctx.response.json({ error: 'Unauthorized' }, 401)
+      return c.response.json({ error: 'Unauthorized' }, 401)
     }
-    // Return void to continue
-  }
-
-  async after(ctx: ClaireContext, response: Response): Promise<Response> {
-    // Optionally inspect or transform the response
-    return response
   }
 }
 ```
 
-## Registering Middleware
+## Attaching Middleware
 
-### Global
+### Global — runs on every request
 
 ```ts
-app.use(new AuthMiddleware())
+app.use(new AuthGuard())
 ```
 
-### Controller-Level
+### Key-level — runs on every route in a key
 
 ```ts
-class UserController extends ClaireController {
+export class UserKey extends ClaireKey {
   constructor() {
-    super('/users', [new AuthMiddleware()])
+    super('/users', [new AuthGuard()])
   }
 }
 ```
 
-### Route-Level
+### Route-level — runs on a single route
 
 ```ts
-this.routes('post', '/', this.create, [new ValidationMiddleware()])
+this.routes('post', '/', this.create, [new UserValidator()])
 ```
 
-## Three Scopes
+## Execution Order (Onion Model)
 
-| Scope | Registered via | Applies to |
-|-------|----------------|-----------|
-| Global | `app.use(mw)` | All requests |
-| Controller | Constructor 2nd arg | All routes in that controller |
-| Route | `this.routes()` 4th arg | That specific route only |
+Middleware follows the onion model — `before()` runs outside-in, `after()` runs inside-out:
+
+```
+Global before → Key before → Route before → Handler → Route after → Key after → Global after
+```
+
+Within each level, `before()` runs in registration order. `after()` runs in **reverse** registration order.
+
+## Key Concepts
+
+| Concept | Description |
+|---------|-------------|
+| `before()` | Runs before the handler. Return `void` to continue, or a `Response` to short-circuit. |
+| `after()` | Runs after the handler in reverse order. Receives and returns the `Response`. |
+| Short-circuit | Returning a `Response` from `before()` skips the handler and all remaining middleware. |
+| Async-safe | Both hooks support `async` — you can `await` inside them. |
+| Onion model | `after()` hooks run in reverse order, wrapping around the handler symmetrically. |
+
+## Built-in Middleware
+
+ClaireX ships with one built-in middleware:
+
+- **ClaireLogger** — Automatically registered on every app. Logs method, URL, and response duration.
+
+## Next Steps
+
+- [Before & After](/docs/middleware/before-after) — Deep dive into the two lifecycle hooks
+- [Short-Circuiting](/docs/middleware/short-circuiting) — How to stop the pipeline early
+- [ClaireLogger](/docs/middleware/claire-logger) — The built-in request logger

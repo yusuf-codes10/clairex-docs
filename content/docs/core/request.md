@@ -1,104 +1,106 @@
 # Request
 
-`ClaireRequest` wraps the native `Request` object and provides typed getters for common operations.
+`ClaireRequest` wraps the native `Request` object and provides typed getters for common data — URL, pathname, method, params, query strings, and headers.
 
-## Getters
-
-All read-only properties are exposed as getters — they derive state from the underlying request, no side effects.
-
-### `method`
-
-The HTTP method as a string:
+## Class Overview
 
 ```ts
-ctx.request.method // "GET", "POST", "PUT", etc.
+class ClaireRequest {
+  public params: Record<string, string>
+
+  get url(): URL
+  get pathname(): string
+  get method(): string
+  get query(): Record<string, string>
+  get queries(): Record<string, string[]>
+  get headers(): Record<string, string>
+
+  async json(): Promise<unknown>
+  async text(): Promise<string>
+}
 ```
 
-### `url`
+## Path Parameters
 
-The full URL as a `URL` object:
+Path params are extracted during route matching and stored on `params`:
 
 ```ts
-ctx.request.url // URL { href: "http://localhost:3000/users?page=1", ... }
+app.get('/users/:id', (c: ClaireContext) => {
+  const { id } = c.request.params
+  return c.response.json({ id })
+})
 ```
 
-### `pathname`
+`params` is a `Record<string, string>` — all values are strings.
 
-Just the path portion:
+## URL & Pathname
 
 ```ts
-ctx.request.pathname // "/users"
+app.get('/users', (c: ClaireContext) => {
+  c.request.url       // URL object: http://localhost:3000/users?page=1
+  c.request.pathname  // "/users"
+})
 ```
 
-### `params`
+- `url` returns the full `URL` object (native Web API)
+- `pathname` returns just the path portion as a string
 
-Route parameters extracted from dynamic segments:
+## HTTP Method
 
 ```ts
-// Route: /users/:id
-ctx.request.params // { id: "123" }
+c.request.method // "GET", "POST", "PUT", "PATCH", "DELETE"
 ```
 
-Return type: `Record<string, string>`
+## Query Parameters
 
-### `query`
+### Single Values — `query`
 
-Query string parameters (single values — last value wins for duplicates):
+Returns a `Record<string, string>`. If a key appears multiple times, only the last value is kept:
 
 ```ts
-// URL: /search?q=claire&page=2
-ctx.request.query // { q: "claire", page: "2" }
+// URL: /users?page=1&limit=10
+c.request.query // { page: "1", limit: "10" }
 ```
 
-Return type: `Record<string, string>`
+### Multiple Values — `queries`
 
-### `queries`
-
-Query string parameters (all values preserved as arrays):
+Returns a `Record<string, string[]>`. Preserves all values for repeated keys:
 
 ```ts
-// URL: /filter?tag=bun&tag=typescript
-ctx.request.queries // { tag: ["bun", "typescript"] }
+// URL: /users?tag=admin&tag=editor
+c.request.queries // { tag: ["admin", "editor"] }
 ```
 
-Return type: `Record<string, string[]>`
+## Headers
 
-### `headers`
-
-Request headers as a flat object:
+Returns all request headers as a `Record<string, string>`:
 
 ```ts
-ctx.request.headers // { "content-type": "application/json", "authorization": "Bearer ..." }
+const token = c.request.headers['authorization']
+const contentType = c.request.headers['content-type']
 ```
 
-Return type: `Record<string, string>`
-
-## Methods
-
-Methods perform actions — they do something (parse, read) and may be async.
+## Body Methods
 
 ### `json()`
 
-Parse the request body as JSON:
+Parses the request body as JSON. Returns `Promise<unknown>`:
 
 ```ts
-const body = await ctx.request.json()
+const body = await c.request.json()
 ```
 
-Return type: `Promise<unknown>`
+> **Note:** For typed body access, use `ClaireValidator` + `c.valid<T>()` instead of casting manually.
 
 ### `text()`
 
-Read the request body as plain text:
+Returns the raw request body as a string. Returns `Promise<string>`:
 
 ```ts
-const raw = await ctx.request.text()
+const raw = await c.request.text()
 ```
-
-Return type: `Promise<string>`
 
 ## Design Notes
 
-- **Getters vs methods** — Getters are for derived state (no args, no side effects). Methods are for actions that require work (body parsing is async I/O).
-- **Explicit return types** — Every getter and method has a declared return type. No inference.
-- **Backing field pattern** — Internal state uses private `_field` with a public getter for encapsulation.
+- **Getters for derived state** — `url`, `pathname`, `method`, `query`, `queries`, `headers` are all getters because they derive data from the underlying request without side effects.
+- **Methods for actions** — `json()` and `text()` are methods because they perform async I/O (reading the body stream).

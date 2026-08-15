@@ -1,45 +1,52 @@
 # Quick Start
 
-Build a working API with ClaireX in under 5 minutes.
+Build a working ClaireX API in under a minute.
 
-## Create the Application
+## Inline Routes
+
+The simplest way to start — register routes directly on the app:
 
 ```ts
 import { ClaireX } from 'clairex-core'
+import { ClaireContext } from 'clairex-core/core/context'
 
 const app = new ClaireX(3000)
+
+app.get('/', (c: ClaireContext) => {
+  return c.response.json({ message: 'Hello, ClaireX!' })
+})
+
+app.get('/health', (c: ClaireContext) => {
+  return c.response.text('OK')
+})
+
+app.listen()
 ```
 
-The constructor takes the port number. That's it — no config objects, no options bags.
+Run it:
 
-## Register Routes
-
-```ts
-app.get('/hello', (ctx) => {
-  return ctx.response.json({ message: 'Hello ClaireX!' })
-})
-
-app.get('/users/:id', (ctx) => {
-  const id = ctx.request.params.id
-  return ctx.response.json({ userId: id })
-})
-
-app.post('/users', async (ctx) => {
-  const body = await ctx.request.json()
-  return ctx.response.json({ created: body }, 201)
-})
+```bash
+bun run src/index.ts
 ```
 
-Every handler receives a `ClaireContext` containing the `request` and `response` objects.
+You'll see the ClaireX banner in your terminal, and the server is running on port 3000.
 
-## Use a Controller
+## Using Keys
 
-For grouping related routes, use a controller:
+For real applications, you'll organize routes into Keys. A Key is a self-contained unit that owns a prefix, handlers, and optional scoped middleware.
+
+Create `src/keys/users.key.ts`:
 
 ```ts
-import { ClaireController } from 'clairex-core'
+import { ClaireKey } from 'clairex-core/core/key'
+import { ClaireContext } from 'clairex-core/core/context'
 
-class UserController extends ClaireController {
+const users = [
+  { id: 1, name: 'Claire', age: 23 },
+  { id: 2, name: 'John', age: 33 },
+]
+
+export class UserKey extends ClaireKey {
   constructor() {
     super('/users')
   }
@@ -47,72 +54,44 @@ class UserController extends ClaireController {
   register(): void {
     this.routes('get', '/', this.getAll)
     this.routes('get', '/:id', this.getById)
-    this.routes('post', '/', this.create)
   }
 
-  getAll(ctx: ClaireContext): Response {
-    return ctx.response.json({ users: [] })
+  private getAll(c: ClaireContext): Response {
+    return c.response.json(users)
   }
 
-  getById(ctx: ClaireContext): Response {
-    const id = ctx.request.params.id
-    return ctx.response.json({ id })
-  }
-
-  async create(ctx: ClaireContext): Promise<Response> {
-    const body = await ctx.request.json()
-    return ctx.response.json({ created: body }, 201)
+  private getById(c: ClaireContext): Response {
+    const { id } = c.request.params
+    const user = users.find(u => u.id === Number(id))
+    if (!user) throw new ClaireException(404, 'User not found')
+    return c.response.json(user)
   }
 }
 ```
 
-Mount it on the app:
-
-```ts
-app.mount(new UserController())
-```
-
-## Add Middleware
-
-```ts
-import { ClaireMiddleware, ClaireContext } from 'clairex-core'
-
-class AuthMiddleware extends ClaireMiddleware {
-  async before(ctx: ClaireContext): Promise<Response | void> {
-    const token = ctx.request.headers['authorization']
-    if (!token) {
-      return ctx.response.json({ error: 'Unauthorized' }, 401)
-    }
-  }
-}
-
-app.use(new AuthMiddleware())
-```
-
-Returning a `Response` from `before()` short-circuits the request — the handler never runs.
-
-## Start the Server
-
-```ts
-app.listen()
-```
-
-That's it. Your full file:
+Create `src/index.ts`:
 
 ```ts
 import { ClaireX } from 'clairex-core'
+import { UserKey } from './keys/users.key'
 
-const app = new ClaireX(3000)
-
-app.get('/', (ctx) => {
-  return ctx.response.json({ message: 'Hello ClaireX!' })
-})
-
-app.listen()
+new ClaireX(3000)
+  .unlock(new UserKey())
+  .listen()
 ```
+
+That's it — method chaining makes the setup clean and readable.
+
+## What Just Happened?
+
+1. `new ClaireX(3000)` — Creates the app on port 3000
+2. `.unlock(new UserKey())` — Registers all routes from the UserKey (prefixed with `/users`)
+3. `.listen()` — Starts the Bun server
+
+ClaireX automatically includes a `ClaireLogger` middleware that logs every request with method, URL, and duration.
 
 ## Next Steps
 
-- [ClaireX Core](/docs/core/clairex) — Understand the main application class
-- [Routing](/docs/core/routing) — Learn about route matching and params
-- [Middleware](/docs/middleware/overview) — Dive deeper into the onion model
+- [ClaireX](/docs/core/clairex) — Understand the application class
+- [Keys](/docs/keys/overview) — Deep dive into organizing routes with Keys
+- [Middleware](/docs/middleware/overview) — Add global and scoped middleware

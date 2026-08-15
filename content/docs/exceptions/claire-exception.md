@@ -1,60 +1,101 @@
 # ClaireException
 
-`ClaireException` extends the native `Error` class and provides structured error responses for your API.
+`ClaireException` is the base exception class in ClaireX. It provides structured error responses with a status code, message, and optional metadata. You can throw it to bubble to the global catch, or call `.toResponse()` to return inline.
 
-## Structure
+## Class Signature
 
 ```ts
 class ClaireException extends Error {
-  public statusCode: number
-  public content: string
-  public metadata?: Record<string, unknown>
+  constructor(statusCode: number, content: string, metadata?: Record<string, string>)
+
+  get statusCode(): number
+  get content(): string
+  get metadata(): Record<string, string> | undefined
+
+  toResponse(): Response
 }
 ```
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `statusCode` | `number` | HTTP status code (400, 401, 404, 500, etc.) |
-| `content` | `string` | Error message sent in the response body |
-| `metadata` | `Record<string, unknown>` | Optional additional context |
 
 ## Creating an Exception
 
 ```ts
-import { ClaireException } from 'clairex-core'
+import { ClaireException } from 'clairex-core/core/exception'
 
-throw new ClaireException(404, 'User not found')
-throw new ClaireException(400, 'Invalid email format', { field: 'email' })
+// Basic exception
+new ClaireException(404, 'User not found')
+
+// With metadata
+new ClaireException(400, 'Invalid input', { field: 'email', hint: 'Must be a valid email' })
 ```
 
-## `toResponse()`
+## Two Ways to Use
 
-Converts the exception into a structured JSON `Response`:
+### 1. Throw — Bubbles to Global Catch
 
 ```ts
-const exception = new ClaireException(404, 'Not found')
-const response = exception.toResponse()
-// Response body: { "exception": "Not found" }
-// Status: 404
+private getById(c: ClaireContext): Response {
+  const user = users.find(u => u.id === Number(c.request.params.id))
+  if (!user) throw new ClaireException(404, 'User not found')
+  return c.response.json(user)
+}
 ```
 
-## Throwing in Handlers
+When thrown, the exception bubbles up to ClaireX's global try/catch in the fetch handler, which calls `e.toResponse()` and returns the structured error to the client.
+
+### 2. Return Inline — Handler Stays in Control
 
 ```ts
-app.get('/users/:id', async (ctx) => {
-  const user = await findUser(ctx.request.params.id)
-  if (!user) {
-    throw new ClaireException(404, 'User not found')
+private async create(c: ClaireContext): Promise<Response> {
+  const body = c.valid<User>()
+  if (users.find(u => u.id === body.id)) {
+    return new ClaireException(400, 'User id already exists!').toResponse()
   }
-  return ctx.response.json(user)
-})
+  users.push(body)
+  return c.response.json(users, 201)
+}
 ```
 
-The framework catches the exception automatically and returns the structured response.
+Calling `.toResponse()` converts the exception into a `Response` immediately without throwing. The handler remains in control of the flow.
 
-## Custom Subclasses
+## Response Format
 
-You can extend `ClaireException` for reusable typed errors:
+`.toResponse()` returns a JSON response with this structure:
+
+```json
+{
+  "exception": "User not found"
+}
+```
+
+- Status code is set from the `statusCode` argument
+- Content-Type is `application/json`
+- The `content` string is placed in the `exception` field
+
+## Console Logging
+
+When `.toResponse()` is called, ClaireX also logs the exception to the console in a styled format:
+
+```
+   ╔══════════════════════════════════════════════════════════════╗
+   ║  ClaireException [404]                                      ║
+   ╠══════════════════════════════════════════════════════════════╣
+   ║  User not found                                             ║
+   ╚══════════════════════════════════════════════════════════════╝
+```
+
+This gives you visibility into errors during development without needing to check network responses.
+
+## Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `statusCode` | `number` | The HTTP status code (getter, backing field pattern) |
+| `content` | `string` | The error message |
+| `metadata` | `Record<string, string> \| undefined` | Optional key-value metadata |
+
+## Extending ClaireException
+
+You can create custom exception subclasses for common error types:
 
 ```ts
 class NotFoundException extends ClaireException {
@@ -69,3 +110,18 @@ class UnauthorizedException extends ClaireException {
   }
 }
 ```
+
+Usage:
+
+```ts
+throw new NotFoundException('User')
+throw new UnauthorizedException()
+```
+
+## Inheritance
+
+```
+ClaireException extends Error
+```
+
+Because it extends `Error`, you get standard error properties (`message`, `name`, `stack`) in addition to the ClaireX-specific ones.

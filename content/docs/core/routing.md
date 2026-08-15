@@ -1,95 +1,116 @@
 # Routing
 
-ClaireX uses a flat, linear route matching system. Routes are registered in order and the first match wins.
+ClaireX has a two-level routing system: `ClaireRouter` handles route storage, and `ClaireX` handles route matching at runtime.
 
-## Registering Routes
+## ClaireRouter
 
-Routes are registered via HTTP method helpers on the app (or on a controller's internal router):
+`ClaireRouter` is a simple class that stores route entries and provides HTTP method helpers:
 
 ```ts
-app.get('/users', handler)
-app.post('/users', handler)
-app.put('/users/:id', handler)
-app.patch('/users/:id', handler)
-app.delete('/users/:id', handler)
+class ClaireRouter {
+  get routes(): RouterEntry[]
+
+  get(path: string, handler: ClaireHandler): void
+  post(path: string, handler: ClaireHandler): void
+  put(path: string, handler: ClaireHandler): void
+  patch(path: string, handler: ClaireHandler): void
+  delete(path: string, handler: ClaireHandler): void
+}
 ```
 
-Each method takes a pattern string and a handler function.
+You rarely interact with `ClaireRouter` directly — ClaireX exposes the same method helpers on the app instance, and Keys use their own `routes()` method internally.
+
+## Route Entry
+
+Every registered route becomes a `RouterEntry`:
+
+```ts
+type RouterEntry = {
+  method: string
+  pattern: string
+  handler: ClaireHandler
+  middlewares?: ClaireMiddleware[]       // key-level middleware
+  routeMiddlewares?: ClaireMiddleware[]  // route-level middleware
+}
+```
 
 ## Handler Signature
 
-Every handler receives a `ClaireContext` and must return a `Response`:
+Every route handler follows the `ClaireHandler` type:
 
 ```ts
-type ClaireHandler = (ctx: ClaireContext) => Response | Promise<Response>
+type ClaireHandler = (c: ClaireContext) => Response | Promise<Response>
+```
+
+Handlers receive a `ClaireContext` and must return a native `Response` (sync or async).
+
+## Registering Inline Routes
+
+On the app instance directly:
+
+```ts
+const app = new ClaireX(3000)
+
+app.get('/users', (c: ClaireContext) => {
+  return c.response.json([])
+})
+
+app.post('/users', async (c: ClaireContext) => {
+  const body = await c.request.json()
+  return c.response.json(body, 201)
+})
 ```
 
 ## Path Parameters
 
-Dynamic segments are prefixed with `:` — they match any value and are extracted into `ctx.request.params`:
+Use `:paramName` syntax to define dynamic segments:
 
 ```ts
-app.get('/users/:id', (ctx) => {
-  const id = ctx.request.params.id
-  return ctx.response.json({ userId: id })
-})
-
-app.get('/posts/:postId/comments/:commentId', (ctx) => {
-  const { postId, commentId } = ctx.request.params
-  return ctx.response.json({ postId, commentId })
+app.get('/users/:id', (c: ClaireContext) => {
+  const { id } = c.request.params
+  return c.response.json({ id })
 })
 ```
+
+Parameters are extracted during route matching and available on `c.request.params` as a `Record<string, string>`.
 
 ## Route Matching
 
-The matching algorithm:
+ClaireX matches routes by iterating through the registered route table in order:
 
-1. Splits both the registered pattern and the incoming pathname by `/`
-2. If segment counts differ — no match
-3. Static segments must match exactly
-4. Segments starting with `:` are dynamic — any value matches, extracted into params
-5. First registered route that matches wins
+1. Skip if the HTTP method doesn't match
+2. Split both the pattern and the incoming path into segments
+3. Compare segment-by-segment — static segments must match exactly, `:param` segments capture the value
+4. First full match wins
 
-```ts
-// These are checked in registration order
-app.get('/users', getAll)        // matches /users
-app.get('/users/:id', getById)   // matches /users/123, /users/abc
-```
+If no route matches, ClaireX returns a 404 `ClaireException` response.
 
 ## Route Priority
 
-Routes are matched in the order they are registered. There is no specificity ranking — if you register a dynamic route before a static one, the dynamic route wins:
+Routes match in registration order — first match wins. If you have overlapping patterns, register more specific routes before general ones:
 
 ```ts
-// ❌ Bad — :id catches "settings" too
-app.get('/users/:id', getById)
-app.get('/users/settings', getSettings)
-
-// ✅ Good — static first
-app.get('/users/settings', getSettings)
-app.get('/users/:id', getById)
+// Register specific before general
+app.get('/users/me', handleMe)
+app.get('/users/:id', handleById)
 ```
 
-## Controllers
+## Routes in Keys
 
-For grouping related routes, use `ClaireController`:
+When using Keys, routes are registered via the `routes()` method with the key's prefix prepended automatically:
 
 ```ts
-class PostController extends ClaireController {
+class UserKey extends ClaireKey {
   constructor() {
-    super('/posts')
+    super('/users')
   }
 
   register(): void {
-    this.routes('get', '/', this.getAll)
-    this.routes('get', '/:id', this.getById)
-    this.routes('post', '/', this.create)
+    this.routes('get', '/', this.getAll)        // matches GET /users/
+    this.routes('get', '/:id', this.getById)    // matches GET /users/:id
+    this.routes('post', '/', this.create)       // matches POST /users/
   }
-
-  // ... handler methods
 }
-
-app.mount(new PostController())
 ```
 
-The controller prefix is prepended to each route pattern. `this.routes('get', '/:id', ...)` becomes `GET /posts/:id`.
+See [Keys Overview](/docs/keys/overview) for full details.

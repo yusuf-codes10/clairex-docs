@@ -1,6 +1,6 @@
 # Context
 
-`ClaireContext` is a per-request object that composes `ClaireRequest` and `ClaireResponse`. It's created fresh for every incoming request and passed to handlers and middleware.
+`ClaireContext` is the per-request object passed to every handler and middleware. It composes a `ClaireRequest` and a `ClaireResponse` together, and stores validated data from the validator pipeline.
 
 ## Structure
 
@@ -8,55 +8,70 @@
 class ClaireContext {
   public request: ClaireRequest
   public response: ClaireResponse
+
+  set body(data: unknown)
+  valid<T>(): T
 }
 ```
 
-That's it. No magic properties, no hidden state. Context is just a container for the two things you need: the incoming request and the response builder.
+## Accessing Request & Response
 
-## Usage in Handlers
+Every handler receives a `ClaireContext` (commonly named `c`):
 
 ```ts
-app.get('/users/:id', (ctx) => {
+app.get('/users', (c: ClaireContext) => {
   // Read from the request
-  const id = ctx.request.params.id
-  const format = ctx.request.query.format
+  const page = c.request.query.page
 
-  // Build and return a response
-  return ctx.response.json({ id, format })
+  // Build a response
+  return c.response.json({ users: [], page })
 })
 ```
 
-## Usage in Middleware
+- `c.request` — A `ClaireRequest` instance wrapping the native Request
+- `c.response` — A `ClaireResponse` instance with helper methods for building responses
 
-Middleware receives the same context:
+## Validated Data
+
+When a `ClaireValidator` middleware runs before your handler, it parses and validates the request body, then stores it on the context. You retrieve it with `valid<T>()`:
 
 ```ts
-class TimingMiddleware extends ClaireMiddleware {
-  async before(ctx: ClaireContext): Promise<Response | void> {
-    console.log(`→ ${ctx.request.method} ${ctx.request.pathname}`)
-  }
+type User = { id: number; name: string; age: number }
 
-  async after(ctx: ClaireContext, response: Response): Promise<Response> {
-    console.log(`← ${ctx.request.method} ${ctx.request.pathname}`)
-    return response
-  }
+private async createUser(c: ClaireContext): Promise<Response> {
+  const body = c.valid<User>()
+  // body is typed as User — no casting needed
+  return c.response.json(body, 201)
 }
 ```
 
-## Composition Over Inheritance
+### How It Works
 
-ClaireContext uses **composition** — it holds a request and response rather than extending them. This keeps the API surface explicit:
-
-- Need request data? → `ctx.request.___`
-- Need to build a response? → `ctx.response.___`
-
-There's no `ctx.json()` shorthand or `ctx.params` alias. You always go through the specific object. This makes it clear where data comes from and what you're operating on.
+1. The validator calls `c.body = validatedData` (setter)
+2. Your handler calls `c.valid<T>()` to retrieve it with your type applied
+3. The internal storage is `unknown` — the generic cast is safe because validation already passed
 
 ## Lifecycle
 
-1. Native `Request` arrives from Bun.serve
-2. `new ClaireContext(request)` is created — wraps the native request in `ClaireRequest` and instantiates a fresh `ClaireResponse`
-3. Context is passed through middleware and handlers
-4. A native `Response` is returned to the client
+A new `ClaireContext` is created for every incoming request:
 
-The context is never reused across requests.
+```
+Request arrives → new ClaireContext(req) → middleware → handler → Response
+```
+
+The context lives for the duration of a single request/response cycle. It is never shared between requests.
+
+## Type Signature
+
+```ts
+class ClaireContext {
+  public request: ClaireRequest
+  public response: ClaireResponse
+
+  // Validator integration
+  set body(data: unknown)
+  valid<T>(): T
+}
+```
+
+The `body` setter is used by `ClaireValidator` internally. You should only ever call `valid<T>()` in your handlers.
