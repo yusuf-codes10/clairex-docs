@@ -2,7 +2,7 @@
 </script>
 
 <template>
-  <div>
+  <div class="bg-background">
     <Hero />
     <Features />
   </div>

@@ -27,7 +27,7 @@
 
     <!-- image -->
     <div class="hidden lg:block shrink-0">
-      <img src="/images/example.png" alt="ClaireX code example" class="w-[480px] h-auto rounded-lg shadow-lg border border-border">
+      <img src="/images/example.png" alt="ClaireX code example" class="w-120 h-auto rounded-lg shadow-lg border border-border">
     </div>
   </div>
 </template>
