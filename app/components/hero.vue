@@ -28,6 +28,7 @@
     <!-- image -->
     <div class="hidden lg:block shrink-0">
       <!-- code showcase image/slot goes here -->
+       <img src="/images/example.png" alt="example" class="w-100 h-50">
     </div>
   </div>
 </template>
