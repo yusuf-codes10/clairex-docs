@@ -2,35 +2,6 @@
 
 Build a working ClaireX API in under a minute.
 
-## Inline Routes
-
-The simplest way to start — register routes directly on the app:
-
-```ts
-import { ClaireX } from 'clairex-core'
-import { ClaireContext } from 'clairex-core/core/context'
-
-const app = new ClaireX(3000)
-
-app.get('/', (c: ClaireContext) => {
-  return c.response.json({ message: 'Hello, ClaireX!' })
-})
-
-app.get('/health', (c: ClaireContext) => {
-  return c.response.text('OK')
-})
-
-app.listen()
-```
-
-Run it:
-
-```bash
-bun run src/index.ts
-```
-
-You'll see the ClaireX banner in your terminal, and the server is running on port 3000.
-
 ## Using Keys
 
 For real applications, you'll organize routes into Keys. A Key is a self-contained unit that owns a prefix, handlers, and optional scoped middleware.
