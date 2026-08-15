@@ -11,11 +11,11 @@ const { data: doc } = await useAsyncData(`doc-${path}`, () =>
 </script>
 
 <template>
-  <div class="w-full max-w-2xl mx-auto">
+  <div class="w-full max-w-3xl mx-auto py-12 px-6">
     <ContentRenderer
       v-if="doc"
       :value="doc"
-      class="prose prose-invert ..."
+      class="claire-prose"
     />
   </div>
 </template>

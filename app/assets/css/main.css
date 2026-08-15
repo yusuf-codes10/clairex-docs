@@ -113,3 +113,232 @@
   scrollbar-width: thin;
   scrollbar-color: #722F37 var(--background);
 }
+
+
+/* ═══════════════════════════════════════════════════════
+   ClaireX Docs — Prose Styling
+   ═══════════════════════════════════════════════════════ */
+
+.claire-prose {
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  line-height: 1.75;
+  font-size: 1rem;
+}
+
+/* ─── Headings ─── */
+
+.claire-prose h1 {
+  font-family: var(--font-heading);
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 0.75rem;
+}
+
+.claire-prose h2 {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--foreground);
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.claire-prose h3 {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--foreground);
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+
+.claire-prose h4 {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--muted-foreground);
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* ─── Paragraphs & text ─── */
+
+.claire-prose p {
+  margin-top: 0;
+  margin-bottom: 1.25rem;
+  color: var(--foreground);
+}
+
+.claire-prose strong {
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.claire-prose em {
+  font-style: italic;
+}
+
+/* ─── Links ─── */
+
+.claire-prose a {
+  color: var(--primary);
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--border);
+  transition: color 0.15s, text-decoration-color 0.15s;
+}
+
+.claire-prose a:hover {
+  color: var(--primary-hover);
+  text-decoration-color: var(--primary);
+}
+
+/* ─── Inline code ─── */
+
+.claire-prose :not(pre) > code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  font-weight: 500;
+  color: var(--accent-foreground);
+  background: var(--accent);
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+
+/* ─── Code blocks ─── */
+
+.claire-prose pre {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.7;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+}
+
+.claire-prose pre code {
+  font-family: inherit;
+  font-size: inherit;
+  color: var(--foreground);
+  background: none;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+}
+
+/* ─── Lists ─── */
+
+.claire-prose ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-top: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.claire-prose ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin-top: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.claire-prose li {
+  margin-bottom: 0.5rem;
+  color: var(--foreground);
+}
+
+.claire-prose li::marker {
+  color: var(--primary);
+}
+
+/* ─── Tables ─── */
+
+.claire-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+}
+
+.claire-prose th {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  color: var(--foreground);
+  background: var(--muted);
+  border-bottom: 2px solid var(--border);
+}
+
+.claire-prose td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--foreground);
+}
+
+.claire-prose tr:last-child td {
+  border-bottom: none;
+}
+
+/* ─── Blockquotes ─── */
+
+.claire-prose blockquote {
+  border-left: 3px solid var(--primary);
+  background: var(--muted);
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.claire-prose blockquote p {
+  color: var(--muted-foreground);
+  margin-bottom: 0;
+  font-style: italic;
+}
+
+/* ─── Horizontal rules ─── */
+
+.claire-prose hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2.5rem 0;
+}
+
+/* ─── Dark mode overrides ─── */
+
+.dark .claire-prose pre {
+  background: var(--card);
+  border-color: var(--border);
+}
+
+.dark .claire-prose :not(pre) > code {
+  background: var(--accent);
+  border-color: var(--border);
+  color: var(--accent-foreground);
+}
+
+.dark .claire-prose blockquote {
+  background: var(--muted);
+  border-left-color: var(--primary);
+}
+
+.dark .claire-prose th {
+  background: var(--muted);
+}
