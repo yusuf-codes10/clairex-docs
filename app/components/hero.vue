@@ -2,7 +2,7 @@
 </script>
 
 <template>
-  <div class="flex items-center justify-between gap-16 px-6 py-24 w-full mx-auto bg-background">
+  <div class="flex items-center justify-between gap-12 px-6 py-20 max-w-6xl mx-auto bg-background">
     <!-- headline -->
     <div class="flex flex-col gap-6 max-w-lg">
       <h1 class="text-5xl font-bold text-foreground leading-tight">
@@ -27,8 +27,7 @@
 
     <!-- image -->
     <div class="hidden lg:block shrink-0">
-      <!-- code showcase image/slot goes here -->
-       <img src="/images/example.png" alt="example" class="w-100 h-50">
+      <img src="/images/example.png" alt="ClaireX code example" class="w-[480px] h-auto rounded-lg shadow-lg border border-border">
     </div>
   </div>
 </template>
