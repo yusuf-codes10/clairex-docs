@@ -66,7 +66,7 @@ function toggle(index: number): void {
 </script>
 
 <template>
-  <aside class="w-64 h-screen sticky top-0 overflow-y-auto border-r border-border bg-background py-6 px-4">
+  <aside class="w-64 h-screen sticky top-13.25 overflow-y-auto border-r border-border bg-background py-6 px-4">
     <nav>
       <ul class="flex flex-col gap-1">
         <li v-for="(section, index) in sections" :key="section.title">

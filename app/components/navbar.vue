@@ -2,7 +2,7 @@
 
 <template>
   <nav
-    class="flex justify-between items-center py-3 px-6 w-full border-b border-border bg-background"
+    class="sticky top-0 flex justify-between items-center py-3 px-6 w-full border-b border-border bg-background"
   >
     <NuxtLink :to="'/'">
       <logo width="120" />
