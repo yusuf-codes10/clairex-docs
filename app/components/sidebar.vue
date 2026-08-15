@@ -1,72 +1,79 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from "vue";
 
 type SidebarSection = {
-  title: string
-  children: { label: string; path: string }[]
-}
+  title: string;
+  children: { label: string; path: string }[];
+};
 
 const sections: SidebarSection[] = [
   {
-    title: 'Getting Started',
+    title: "Getting Started",
     children: [
-      { label: 'Introduction', path: '/docs/getting-started/introduction' },
-      { label: 'Installation', path: '/docs/getting-started/installation' },
-      { label: 'Quick Start', path: '/docs/getting-started/quick-start' },
+      { label: "Introduction", path: "/docs/getting-started/introduction" },
+      { label: "Installation", path: "/docs/getting-started/installation" },
+      { label: "Quick Start", path: "/docs/getting-started/quick-start" },
     ],
   },
   {
-    title: 'Core',
+    title: "Core",
     children: [
-      { label: 'ClaireX', path: '/docs/core/clairex' },
-      { label: 'Routing', path: '/docs/core/routing' },
-      { label: 'Context', path: '/docs/core/context' },
-      { label: 'Request', path: '/docs/core/request' },
-      { label: 'Response', path: '/docs/core/response' },
+      { label: "ClaireX", path: "/docs/core/clairex" },
+      { label: "Routing", path: "/docs/core/routing" },
+      { label: "Context", path: "/docs/core/context" },
+      { label: "Request", path: "/docs/core/request" },
+      { label: "Response", path: "/docs/core/response" },
     ],
   },
   {
-    title: 'Keys',
+    title: "Keys",
     children: [
-      { label: 'Overview', path: '/docs/keys/overview' },
-      { label: 'Route Registration', path: '/docs/keys/route-registration' },
-      { label: 'Scoped Middleware', path: '/docs/keys/scoped-middleware' },
+      { label: "Overview", path: "/docs/keys/overview" },
+      { label: "Route Registration", path: "/docs/keys/route-registration" },
+      { label: "Scoped Middleware", path: "/docs/keys/scoped-middleware" },
     ],
   },
   {
-    title: 'Middleware',
+    title: "Middleware",
     children: [
-      { label: 'Overview', path: '/docs/middleware/overview' },
-      { label: 'Before & After', path: '/docs/middleware/before-after' },
-      { label: 'Short-Circuiting', path: '/docs/middleware/short-circuiting' },
-      { label: 'ClaireLogger', path: '/docs/middleware/claire-logger' },
+      { label: "Overview", path: "/docs/middleware/overview" },
+      { label: "Before & After", path: "/docs/middleware/before-after" },
+      { label: "Short-Circuiting", path: "/docs/middleware/short-circuiting" },
     ],
   },
   {
-    title: 'Validation',
+    title: "Validation",
     children: [
-      { label: 'Overview', path: '/docs/validation/overview' },
-      { label: 'Rules & Schema', path: '/docs/validation/rules' },
+      { label: "Overview", path: "/docs/validation/overview" },
+      { label: "Rules & Schema", path: "/docs/validation/rules" },
     ],
   },
   {
-    title: 'Exceptions',
+    title: "Exceptions",
     children: [
-      { label: 'ClaireException', path: '/docs/exceptions/claire-exception' },
-      { label: 'Error Handling', path: '/docs/exceptions/error-handling' },
+      { label: "ClaireException", path: "/docs/exceptions/claire-exception" },
+      { label: "Error Handling", path: "/docs/exceptions/error-handling" },
     ],
   },
-]
+  {
+    title: "Helpers",
+    children: [
+      { label: "ClaireLogger", path: "/docs/middleware/claire-logger" },
+    ],
+  },
+];
 
-const openSections = ref<Record<number, boolean>>({ 0: true, 1: true })
+const openSections = ref<Record<number, boolean>>({ 0: true, 1: true });
 
 function toggle(index: number): void {
-  openSections.value[index] = !openSections.value[index]
+  openSections.value[index] = !openSections.value[index];
 }
 </script>
 
 <template>
-  <aside class="w-64 h-screen sticky top-13.25 overflow-y-auto border-r border-border bg-background py-6 px-4">
+  <aside
+    class="w-64 h-screen sticky top-13.25 overflow-y-auto border-r border-border bg-background py-6 px-4"
+  >
     <nav>
       <ul class="flex flex-col gap-1">
         <li v-for="(section, index) in sections" :key="section.title">
@@ -85,7 +92,10 @@ function toggle(index: number): void {
           </button>
 
           <!-- Children -->
-          <ul v-show="openSections[index]" class="ml-3 mt-1 flex flex-col gap-0.5 border-l border-border pl-3">
+          <ul
+            v-show="openSections[index]"
+            class="ml-3 mt-1 flex flex-col gap-0.5 border-l border-border pl-3"
+          >
             <li v-for="child in section.children" :key="child.path">
               <NuxtLink
                 :to="child.path"
