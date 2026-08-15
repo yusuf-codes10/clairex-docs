@@ -1,4 +1,6 @@
 <script setup lang="ts">
+definePageMeta({ layout: 'docs' })
+
 const { data: docs } = await useAsyncData(() => queryCollection("docs").all());
 </script>
 
