@@ -1,18 +1,23 @@
 # Installation
 
-ClaireX requires [Bun](https://bun.sh) as the runtime. It does not support Node.js or Deno.
+ClaireX is built for [Bun](https://bun.sh) — a fast all-in-one JavaScript runtime. You need Bun installed before using ClaireX.
 
 ## Prerequisites
 
-- **Bun** v1.0 or higher
-- **TypeScript** 5.0+
+- [Bun](https://bun.sh) v1.0 or higher
 
 ## Install Bun
 
-If you don't have Bun installed:
+If you don't already have Bun installed:
 
 ```bash
 curl -fsSL https://bun.sh/install | bash
+```
+
+Verify it's working:
+
+```bash
+bun --version
 ```
 
 ## Create a New Project
@@ -29,9 +34,27 @@ bun init
 bun add clairex-core
 ```
 
+## Project Structure
+
+A typical ClaireX project follows this structure:
+
+```
+my-app/
+├── src/
+│   ├── keys/
+│   │   └── users.key.ts
+│   ├── validators/
+│   │   └── userValidator.ts
+│   ├── middlewares/
+│   │   └── auth.ts
+│   └── index.ts
+├── package.json
+└── tsconfig.json
+```
+
 ## TypeScript Configuration
 
-ClaireX works with a standard `tsconfig.json`. Ensure you have strict mode enabled for the best type-safety experience:
+ClaireX uses explicit typing throughout. Ensure your `tsconfig.json` has strict mode enabled:
 
 ```json
 {
@@ -45,30 +68,6 @@ ClaireX works with a standard `tsconfig.json`. Ensure you have strict mode enabl
 }
 ```
 
-## Verify Installation
-
-Create an `index.ts` file:
-
-```ts
-import { ClaireX } from 'clairex-core'
-
-const app = new ClaireX(3000)
-
-app.get('/', (ctx) => {
-  return ctx.response.json({ message: 'ClaireX is running!' })
-})
-
-app.listen()
-```
-
-Run it:
-
-```bash
-bun run index.ts
-```
-
-Visit `http://localhost:3000` — you should see your JSON response.
-
 ## Next Steps
 
-- [Quick Start](/docs/getting-started/quick-start) — Build a full CRUD example
+- [Quick Start](/docs/getting-started/quick-start) — Build your first ClaireX application

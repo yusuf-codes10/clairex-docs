@@ -26,11 +26,11 @@ const sections: SidebarSection[] = [
     ],
   },
   {
-    title: 'Controllers',
+    title: 'Keys',
     children: [
-      { label: 'Overview', path: '/docs/controllers/overview' },
-      { label: 'Route Registration', path: '/docs/controllers/route-registration' },
-      { label: 'Scoped Middleware', path: '/docs/controllers/scoped-middleware' },
+      { label: 'Overview', path: '/docs/keys/overview' },
+      { label: 'Route Registration', path: '/docs/keys/route-registration' },
+      { label: 'Scoped Middleware', path: '/docs/keys/scoped-middleware' },
     ],
   },
   {
@@ -43,23 +43,17 @@ const sections: SidebarSection[] = [
     ],
   },
   {
+    title: 'Validation',
+    children: [
+      { label: 'Overview', path: '/docs/validation/overview' },
+      { label: 'Rules & Schema', path: '/docs/validation/rules' },
+    ],
+  },
+  {
     title: 'Exceptions',
     children: [
       { label: 'ClaireException', path: '/docs/exceptions/claire-exception' },
       { label: 'Error Handling', path: '/docs/exceptions/error-handling' },
-    ],
-  },
-  {
-    title: 'API Reference',
-    children: [
-      { label: 'ClaireX', path: '/docs/api/clairex' },
-      { label: 'ClaireRouter', path: '/docs/api/router' },
-      { label: 'ClaireContext', path: '/docs/api/context' },
-      { label: 'ClaireRequest', path: '/docs/api/request' },
-      { label: 'ClaireResponse', path: '/docs/api/response' },
-      { label: 'ClaireMiddleware', path: '/docs/api/middleware' },
-      { label: 'ClaireController', path: '/docs/api/controller' },
-      { label: 'ClaireException', path: '/docs/api/exception' },
     ],
   },
 ]

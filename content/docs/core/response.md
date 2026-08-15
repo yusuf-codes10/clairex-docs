@@ -1,65 +1,82 @@
 # Response
 
-`ClaireResponse` is a response builder class. Each method creates and returns a native `Response` object with the appropriate headers and status code.
+`ClaireResponse` provides helper methods for building native `Response` objects. Every method returns a standard Web API `Response` — ClaireX never wraps or abstracts the response further.
 
-## Methods
-
-### `json(data, status?)`
-
-Returns a JSON response with `Content-Type: application/json`:
+## Class Overview
 
 ```ts
-ctx.response.json({ message: 'Hello' })        // 200
-ctx.response.json({ created: true }, 201)       // 201
-ctx.response.json({ error: 'Not found' }, 404)  // 404
+class ClaireResponse {
+  get status(): number
+
+  json(data: unknown, status?: number): Response
+  text(data: string, status?: number): Response
+  html(data: string, status?: number): Response
+  redirect(url: string, status?: 301 | 302): Response
+}
 ```
 
-### `text(data, status?)`
+## JSON Response
 
-Returns a plain text response with `Content-Type: text/plain`:
+Returns a `Response` with `Content-Type: application/json`:
 
 ```ts
-ctx.response.text('OK')                  // 200
-ctx.response.text('Created', 201)        // 201
+return c.response.json({ message: 'Hello' })
+return c.response.json({ error: 'Not found' }, 404)
+return c.response.json(users, 200)
 ```
 
-### `html(data, status?)`
+- `data` — Any serializable value (objects, arrays, primitives)
+- `status` — HTTP status code, defaults to 200
 
-Returns an HTML response with `Content-Type: text/html`:
+## Text Response
+
+Returns a `Response` with `Content-Type: text/plain`:
 
 ```ts
-ctx.response.html('<h1>Hello</h1>')              // 200
-ctx.response.html('<p>Not found</p>', 404)       // 404
+return c.response.text('OK')
+return c.response.text('Not found', 404)
 ```
 
-### `redirect(url, status?)`
+- `data` — A plain string
+- `status` — HTTP status code, defaults to 200
 
-Returns a redirect response with a `Location` header:
+## HTML Response
+
+Returns a `Response` with `Content-Type: text/html`:
 
 ```ts
-ctx.response.redirect('/login')          // 302 (default)
-ctx.response.redirect('/new-url', 301)   // 301 permanent
+return c.response.html('<h1>Hello</h1>')
+return c.response.html('<p>Error</p>', 500)
 ```
 
-Only `301` and `302` are accepted as status codes.
+- `data` — An HTML string
+- `status` — HTTP status code, defaults to 200
 
-## Default Status
+## Redirect
 
-All methods default to status `200` unless specified. The `redirect` method defaults to `302`.
-
-## Return Type
-
-Every method returns a native `Response` object. This is what Bun.serve expects from the fetch handler.
+Returns a `Response` with a `Location` header and null body:
 
 ```ts
-app.get('/example', (ctx) => {
-  // This IS the native Response returned to the client
-  return ctx.response.json({ ok: true })
-})
+return c.response.redirect('/login')
+return c.response.redirect('/new-page', 301)
 ```
+
+- `url` — The URL to redirect to
+- `status` — Either `301` (permanent) or `302` (temporary), defaults to 302
+
+## Status Getter
+
+The `status` getter returns the current status code stored on the response instance:
+
+```ts
+c.response.status // 200 (default)
+```
+
+The status is updated internally whenever you call `json()`, `text()`, `html()`, or `redirect()`.
 
 ## Design Notes
 
-- **No chaining** — Each method returns a final `Response`, not the builder. One call = one response.
-- **Explicit status** — Status is always a parameter, never set separately. What you see is what you get.
-- **Backing field pattern** — The internal `_status` field is private with a getter for encapsulation.
+- Every method returns a **native `Response`** — no wrapper, no custom class.
+- The `_status` field uses the backing field pattern (private `_status`, public getter `status`).
+- Status defaults to 200 in the constructor and is updated by each response method.
+- You always return the result of a response method from your handler — ClaireX sends it directly to the client.

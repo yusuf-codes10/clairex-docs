@@ -1,6 +1,6 @@
 # ClaireX
 
-`ClaireX` is the main application class. It extends `ClaireRouter`, meaning the app itself is a router — you can register routes directly on it or mount controllers.
+`ClaireX` is the main application class. It uses **composition** — it owns a `ClaireRouter` internally rather than extending one. You create an instance, unlock keys, register global middleware, and call `listen()`.
 
 ## Creating an Application
 
@@ -10,32 +10,60 @@ import { ClaireX } from 'clairex-core'
 const app = new ClaireX(3000)
 ```
 
-The constructor takes a single argument: the port number. No config objects, no options.
+The constructor takes an optional port number (defaults to 3000). No config objects, no options.
 
-## Class Hierarchy
+## Composition Model
 
 ```
-ClaireX extends ClaireRouter
+ClaireX
+├── owns ClaireRouter (route storage)
+├── owns ClaireMiddleware[] (global middleware chain)
+└── calls Bun.serve() on listen()
 ```
 
-Because `ClaireX` inherits from `ClaireRouter`, it has all routing methods available directly:
+ClaireX does not extend ClaireRouter. It composes one internally. This keeps the application class focused on orchestration while the router handles route storage.
+
+## Inline Routes
+
+Because ClaireX exposes the router's HTTP method helpers, you can register routes directly:
 
 ```ts
-app.get('/path', handler)
-app.post('/path', handler)
-app.put('/path', handler)
-app.patch('/path', handler)
-app.delete('/path', handler)
+app.get('/health', (c: ClaireContext) => {
+  return c.response.text('OK')
+})
+
+app.post('/users', async (c: ClaireContext) => {
+  const body = await c.request.json()
+  return c.response.json(body, 201)
+})
 ```
 
-## Mounting Controllers
+Available methods: `get`, `post`, `put`, `patch`, `delete`.
 
-Controllers are mounted onto the app, registering their routes into the main route table:
+## Unlocking Keys
+
+Keys are the primary way to organize routes in ClaireX. Use `unlock()` to compose a key into the app:
 
 ```ts
-import { UserController } from './controllers/user.controller'
+import { UserKey } from './keys/users.key'
+import { PostKey } from './keys/posts.key'
 
-app.mount(new UserController())
+app.unlock(new UserKey())
+app.unlock(new PostKey())
+```
+
+When you unlock a key, its routes are registered into the app's route table with the key's prefix and scoped middleware attached.
+
+## Method Chaining
+
+`use()` and `unlock()` both return `this`, enabling clean chaining:
+
+```ts
+new ClaireX(3000)
+  .use(new CorsMiddleware())
+  .unlock(new UserKey())
+  .unlock(new PostKey())
+  .listen()
 ```
 
 ## Global Middleware
@@ -55,42 +83,37 @@ Middleware executes in registration order for `before()` hooks and in reverse or
 app.listen()
 ```
 
-This calls `Bun.serve()` internally. The server starts on the port passed to the constructor.
+This calls `Bun.serve()` internally. The server starts on the configured port and prints the ClaireX banner to the console.
 
 ## Built-in Behavior
 
 - **ClaireLogger** is automatically registered as the first global middleware. It logs the HTTP method, URL, and response duration for every request.
-- **404 handling** — If no route matches, a `ClaireException` with status 404 is returned.
+- **404 handling** — If no route matches, a `ClaireException` with status 404 is returned as a structured JSON response.
 - **Error catching** — All handlers are wrapped in try/catch. Thrown `ClaireException` instances are converted to structured JSON responses. Unknown errors return a generic 500.
 
 ## Request Lifecycle
 
 1. Request arrives via `Bun.serve()`
 2. `ClaireContext` is created (wraps native Request into ClaireRequest + ClaireResponse)
-3. Route matching — iterates registered routes, extracts path params
+3. Route matching — iterates registered routes, checks method and pattern, extracts path params
 4. Global middleware `before()` runs (short-circuits if a Response is returned)
-5. Controller middleware `before()` runs
+5. Key-level (scoped) middleware `before()` runs
 6. Route-level middleware `before()` runs
 7. Handler executes
 8. Route-level middleware `after()` runs (reverse order)
-9. Controller middleware `after()` runs (reverse order)
+9. Key-level middleware `after()` runs (reverse order)
 10. Global middleware `after()` runs (reverse order)
 11. Response returned to client
 
-## Example
+## Full Example
 
 ```ts
 import { ClaireX } from 'clairex-core'
+import { UserKey } from './keys/users.key'
+import { AuthGuard } from './middlewares/auth'
 
-const app = new ClaireX(3000)
-
-app.get('/', (ctx) => {
-  return ctx.response.json({ status: 'running' })
-})
-
-app.get('/health', (ctx) => {
-  return ctx.response.text('OK')
-})
-
-app.listen()
+new ClaireX(3000)
+  .use(new AuthGuard())
+  .unlock(new UserKey())
+  .listen()
 ```

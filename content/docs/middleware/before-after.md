@@ -1,54 +1,108 @@
-# Before & After Hooks
+# Before & After
 
-Every middleware has two hooks that execute at different stages of the request lifecycle.
+Every `ClaireMiddleware` has two lifecycle hooks: `before()` runs before the handler, `after()` runs after it. You can override one or both.
 
-## `before(ctx)`
-
-Runs **before** the route handler. Can either continue the chain or short-circuit.
+## `before()`
 
 ```ts
-async before(ctx: ClaireContext): Promise<Response | void> {
-  // Return void → continue to next middleware / handler
-  // Return Response → stop the chain, send this response
+before(ctx: ClaireContext): void | Response | Promise<void | Response>
+```
+
+Runs before the route handler. Two possible outcomes:
+
+- **Return `void`** (or return nothing) — the pipeline continues to the next middleware or handler
+- **Return a `Response`** — short-circuits the entire pipeline; the response goes directly to the client
+
+### Example: Logging
+
+```ts
+class RequestLogger extends ClaireMiddleware {
+  override before(c: ClaireContext): void {
+    console.log(`→ ${c.request.method} ${c.request.pathname}`)
+  }
 }
 ```
 
-### Use Cases
-
-- Authentication checks
-- Rate limiting
-- Request validation
-- Logging request start
-
-## `after(ctx, response)`
-
-Runs **after** the route handler (and after inner middleware). Receives the response that will be sent.
+### Example: Auth Check
 
 ```ts
-async after(ctx: ClaireContext, response: Response): Promise<Response> {
-  // Must return a Response (pass-through or modified)
-  return response
+class AuthGuard extends ClaireMiddleware {
+  override before(c: ClaireContext): void | Response {
+    if (!c.request.headers['authorization']) {
+      return c.response.json({ error: 'Unauthorized' }, 401)
+    }
+    // returning nothing = continue
+  }
 }
 ```
 
-### Use Cases
+## `after()`
 
-- Adding response headers
-- Logging response status / duration
-- Response transformation
-
-## Execution Order Example
-
-With three middleware registered in order A, B, C:
-
-```
-→ A.before()
-  → B.before()
-    → C.before()
-      → Handler
-    ← C.after()
-  ← B.after()
-← A.after()
+```ts
+after(ctx: ClaireContext, response: Response): Response | Promise<Response>
 ```
 
-This is the onion model — before hooks wrap the handler from outside-in, after hooks unwrap from inside-out.
+Runs after the handler. It receives the response and **must return a response** (the same one or a modified one).
+
+### Example: Response Logging
+
+```ts
+class ResponseLogger extends ClaireMiddleware {
+  override after(c: ClaireContext, response: Response): Response {
+    console.log(`← ${response.status} ${c.request.pathname}`)
+    return response
+  }
+}
+```
+
+### Example: Adding Headers
+
+```ts
+class CorsMiddleware extends ClaireMiddleware {
+  override after(c: ClaireContext, response: Response): Response {
+    response.headers.set('Access-Control-Allow-Origin', '*')
+    return response
+  }
+}
+```
+
+## Execution Order
+
+`before()` hooks run in **registration order** (first registered = first to run).
+`after()` hooks run in **reverse order** (last registered = first to run after handler).
+
+This creates the onion model:
+
+```
+Middleware A before
+  Middleware B before
+    Middleware C before
+      → Handler →
+    Middleware C after
+  Middleware B after
+Middleware A after
+```
+
+## Async Support
+
+Both hooks fully support async/await:
+
+```ts
+class SlowCheck extends ClaireMiddleware {
+  override async before(c: ClaireContext): Promise<void | Response> {
+    const allowed = await checkRateLimit(c.request.headers['x-api-key'])
+    if (!allowed) {
+      return c.response.json({ error: 'Rate limited' }, 429)
+    }
+  }
+}
+```
+
+## Default Behavior
+
+The base class provides default implementations:
+
+- `before()` — does nothing, returns `void` (pipeline continues)
+- `after()` — returns the response unchanged
+
+You only need to override the hooks you care about.
