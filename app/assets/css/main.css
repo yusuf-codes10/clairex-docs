@@ -342,3 +342,39 @@
 .dark .claire-prose th {
   background: var(--muted);
 }
+
+
+/* ─── Small screens ─── */
+
+@media (max-width: 640px) {
+  .claire-prose {
+    font-size: 0.9375rem;
+  }
+
+  .claire-prose h1 {
+    font-size: 1.75rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .claire-prose h2 {
+    font-size: 1.3125rem;
+    margin-top: 2rem;
+  }
+
+  .claire-prose h3 {
+    font-size: 1.125rem;
+    margin-top: 1.5rem;
+  }
+
+  .claire-prose pre {
+    padding: 1rem;
+    font-size: 0.8125rem;
+  }
+
+  /* Tables scroll on their own instead of widening the page */
+  .claire-prose table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}

@@ -11,7 +11,7 @@ const { data: doc } = await useAsyncData(`doc-${path}`, () =>
 </script>
 
 <template>
-  <div class="w-full max-w-3xl mx-auto py-12 px-6">
+  <div class="w-full max-w-3xl mx-auto px-4 py-8 sm:px-6 sm:py-12">
     <ContentRenderer
       v-if="doc"
       :value="doc"
