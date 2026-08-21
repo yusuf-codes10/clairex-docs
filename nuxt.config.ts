@@ -10,8 +10,6 @@ export default defineNuxtConfig({
   css: ["~/assets/css/main.css"],
   app: {
     head: {
-      title: "ClaireX",
-      titleTemplate: "%s · ClaireX",
       link: [{ rel: "icon", type: "image/png", href: "/images/favicon.png" }],
       meta: [
         {

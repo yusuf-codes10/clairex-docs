@@ -3,7 +3,7 @@ useHead({
   titleTemplate: (title) =>
     title
       ? `${title} · ClaireX`
-      : "ClaireX — a class-based, explicitly-typed web framework for Bun",
+      : "ClaireX",
 });
 </script>
 
