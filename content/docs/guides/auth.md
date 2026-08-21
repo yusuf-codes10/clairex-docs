@@ -1,6 +1,6 @@
 # Protecting Routes
 
-ClaireX ships JWT authentication with no external dependencies — signing and verification are built on Bun's native `crypto.subtle`.
+ClaireX ships JWT authentication with no external dependencies, signing and verification are built on Bun's native `crypto.subtle`.
 
 ## Issue a token
 
