@@ -19,7 +19,7 @@ export class userKey extends ClaireKey {
 }
 ```
 
-That is ordinary TypeScript. The extension does not add syntax — it adds enforcement.
+That is ordinary TypeScript. The extension does not add syntax, it adds enforcement.
 
 ## Why
 
@@ -65,7 +65,7 @@ read the file, check it against the ClaireX rules
         └── valid      → hand to Bun as TypeScript
 ```
 
-Because the check happens at load time, the file is validated every run — there is no build step to forget and no cache to go stale.
+Because the check happens at load time, the file is validated every run, there is no build step to forget and no cache to go stale.
 
 ## What is enforced
 
@@ -84,7 +84,7 @@ This is a consequence of the design rather than an oversight: the loader is a ha
 
 ## When to use it
 
-Use `.claire` for the class-based parts of your app — keys, validators, middleware. Those are exactly where the rules add value.
+Use `.claire` for the class-based parts of your app, keys, validators, middleware. Those are exactly where the rules add value.
 
 Use plain `.ts` for types, constants, and helpers. A rule requiring every file to export a class would be actively wrong for a file of type aliases.
 
@@ -94,7 +94,7 @@ Both can import each other freely.
 
 VS Code does not resolve `.claire` imports on its own, and will underline them in red. The ClaireX extension fixes that and gives `.claire` files the complete TypeScript experience.
 
-It is optional — your app runs identically without it. See [Editor Setup](/docs/claire-files/editor-setup).
+It is optional, your app runs identically without it. See [Editor Setup](/docs/claire-files/editor-setup).
 
 ## Next
 
