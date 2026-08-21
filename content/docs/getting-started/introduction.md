@@ -1,54 +1,80 @@
 # Introduction
 
-ClaireX is a class-based, explicitly-typed web framework built natively for Bun. It treats Object-Oriented Programming as the foundation — not an afterthought.
+ClaireX is a class-based, explicitly-typed web framework for [Bun](https://bun.sh).
 
-## Philosophy
-
-- **Explicit types** — No type inference. Every type is declared, like Java.
-- **Class-based everything** — Keys, middleware, validators, exceptions — all classes you instantiate, extend, or override.
-- **Built-in validation** — No Zod, no Yup, no external libraries. Validation lives in classes alongside your types.
-- **Bun-native** — Built on `Bun.serve()` from the ground up. No compatibility layers.
-- **No magic** — No decorators, no hidden behavior. What you write is what runs.
-- **Composition over inheritance** — ClaireX owns a router internally rather than extending one. Keys are composed into the app via `unlock()`.
-
-## Who Is This For?
-
-ClaireX is for developers who:
-
-- Want structure and predictability in their web framework
-- Prefer OOP patterns over functional composition
-- Value explicit typing over inference
-- Want validation baked into the framework, not bolted on
-- Like method chaining for clean, readable setup code
-
-## Core Concepts
-
-ClaireX is built around a few key classes:
-
-| Class | Role |
-|-------|------|
-| `ClaireX` | The application — owns a ClaireRouter via composition, wraps Bun.serve |
-| `ClaireRouter` | Route storage and HTTP method helpers |
-| `ClaireContext` | Per-request composition of Request + Response |
-| `ClaireRequest` | Wraps the native Request with typed getters |
-| `ClaireResponse` | Response builder with json, text, html, redirect |
-| `ClaireKey` | Abstract class for self-contained route units with prefix + scoped middleware |
-| `ClaireMiddleware` | Abstract class with before/after hooks (onion model) |
-| `ClaireValidator` | Abstract class for request body validation — extends ClaireMiddleware |
-| `ClaireException` | Typed errors with structured JSON responses |
-
-## The Key Metaphor
-
-In ClaireX, a **Key** unlocks access to a set of routes. Each `ClaireKey` is a self-contained unit — it owns a prefix, its own middleware chain, and its route handlers. You compose your app by unlocking keys into it:
+Everything is a class you instantiate, extend, and override. Every type is declared — nothing is inferred. Validation is built into the framework, not bolted on from a third-party library.
 
 ```ts
-const app = new ClaireX(3000)
-app.unlock(new UserKey())
-app.unlock(new PostKey())
-app.listen()
+new ClaireX(3000)
+  .unlock(new userKey())
+  .listen();
 ```
 
-## Next Steps
+## Four principles
 
-- [Installation](/docs/getting-started/installation) — Get ClaireX set up in your project
-- [Quick Start](/docs/getting-started/quick-start) — Build your first route in under a minute
+**Explicit types only.** No inference. You declare types the way you would in Java. This is a deliberate constraint: when the compiler never guesses, you never debug a guess.
+
+**Built-in validation.** No Zod, no Yup, no Joi. `ClaireValidator` is part of the framework, and it is a class you extend like everything else.
+
+**Object-oriented.** Routes, middleware, validators, exceptions — all classes. You instantiate them, and you override the parts you want to change.
+
+**Bun-native.** Built directly on `Bun.serve`. Zero runtime dependencies.
+
+## What makes it different
+
+Most frameworks give you a router and let you assemble the rest. ClaireX gives you one building block — the **ClaireKey** — that covers five concepts other frameworks keep separate:
+
+| Elsewhere you need | ClaireX uses |
+|---|---|
+| Controller | ClaireKey |
+| Router group | ClaireKey (prefix) |
+| Plugin | ClaireKey (self-contained, mountable) |
+| Middleware scope | ClaireKey (owns its middleware) |
+| Module | ClaireKey (self-registers) |
+
+One class per resource: its prefix, its routes, its handlers, its middleware. Mount it with `unlock()` and every route comes with it.
+
+## Validation that knows the method
+
+You write one validator per resource, not one per action:
+
+```ts
+export class userValidator extends ClaireValidator {
+  override rules(): ValidationSchema {
+    return {
+      id:   { type: "number", required: true, immutable: true },
+      name: { type: "string", required: true, min: 3, max: 50 },
+      age:  { type: "number", required: true, min: 18 },
+    };
+  }
+}
+```
+
+ClaireX adjusts enforcement based on the HTTP method — `POST` requires every field, `PATCH` treats them all as optional while still checking types and bounds. One schema, every action.
+
+See [Validating Input](/docs/guides/validation) for the full picture.
+
+## The `.claire` extension
+
+ClaireX ships an optional file extension. A `.claire` file is TypeScript with extra rules enforced at load time: it must export a class, and every method must declare an explicit return type. Break a rule and the process stops before the server starts.
+
+```
+   ╔════════════════════════════════════════════════════════╗
+   ║  ClairePlugin — 1 violation                             ║
+   ╠════════════════════════════════════════════════════════╣
+   ║  user.key.claire:42  Missing explicit return type       ║
+   ╚════════════════════════════════════════════════════════╝
+```
+
+See [.claire Files](/docs/claire-files/overview).
+
+## Who this is for
+
+ClaireX suits you if you like explicit structure, prefer classes to configuration objects, and would rather the framework enforce conventions than trust you to follow them.
+
+It is probably not for you if you want maximum flexibility, prefer functional composition, or like type inference doing the work. Those are reasonable preferences — ClaireX just makes the opposite trade.
+
+## Next
+
+- [Installation](/docs/getting-started/installation) — get a project running
+- [Your First API](/docs/getting-started/first-api) — a guided tour of the scaffolded app

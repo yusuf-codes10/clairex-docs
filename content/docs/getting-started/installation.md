@@ -1,73 +1,125 @@
 # Installation
 
-ClaireX is built for [Bun](https://bun.sh) — a fast all-in-one JavaScript runtime. You need Bun installed before using ClaireX.
+## Requirements
 
-## Prerequisites
-
-- [Bun](https://bun.sh) v1.0 or higher
-
-## Install Bun
-
-If you don't already have Bun installed:
+[Bun](https://bun.sh) v1.0 or higher. ClaireX targets Bun only — it is built on `Bun.serve` and uses Bun's plugin API.
 
 ```bash
 curl -fsSL https://bun.sh/install | bash
-```
-
-Verify it's working:
-
-```bash
 bun --version
 ```
 
-## Create a New Project
+## Scaffold a project
+
+The fastest way to start, and the recommended one:
 
 ```bash
-mkdir my-app
+bun create clairex my-app
 cd my-app
-bun init
+bun install
+bun dev
 ```
 
-## Install ClaireX
+You get a running API on `http://localhost:3000` with a complete `users` resource — routes, validation, and error handling already wired up.
 
 ```bash
-bun add clairex-core
+curl http://localhost:3000/users
 ```
 
-## Project Structure
+Continue to [Your First API](/docs/getting-started/first-api) for a tour of what was generated.
 
-A typical ClaireX project follows this structure:
+## Manual installation
 
-```
-my-app/
-├── src/
-│   ├── keys/
-│   │   └── users.key.ts
-│   ├── validators/
-│   │   └── userValidator.ts
-│   ├── middlewares/
-│   │   └── auth.ts
-│   └── index.ts
-├── package.json
-└── tsconfig.json
+If you would rather assemble it yourself:
+
+```bash
+mkdir my-app && cd my-app
+bun init -y
+bun add @clairex/core
 ```
 
-## TypeScript Configuration
+### Configure `bunfig.toml`
 
-ClaireX uses explicit typing throughout. Ensure your `tsconfig.json` has strict mode enabled:
+Create `bunfig.toml` in the project root:
+
+```toml
+preload = ["@clairex/core/plugin"]
+```
+
+::alert{type="warning"}
+**This step is required if you use `.claire` files.** The line registers the ClaireX loader. Without it, Bun parses `.claire` files with no loader and their exports come back empty — you get `Export named 'userKey' not found`, which does not hint at the real cause.
+
+If you only use `.ts` files, you can skip this.
+::
+
+### Configure `tsconfig.json`
+
+ClaireX expects strict, explicit typing:
 
 ```json
 {
   "compilerOptions": {
-    "strict": true,
+    "lib": ["ESNext"],
     "target": "ESNext",
-    "module": "ESNext",
+    "module": "Preserve",
+    "moduleDetection": "force",
+    "types": ["bun"],
+
     "moduleResolution": "bundler",
-    "types": ["bun-types"]
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
+
+    "strict": true,
+    "skipLibCheck": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true
+  },
+  "include": ["src/**/*"]
+}
+```
+
+`noImplicitOverride` matters — ClaireX relies on `override` being explicit when you extend its classes.
+
+### Minimal app
+
+```ts
+// src/index.ts
+import { ClaireX } from "@clairex/core";
+import { userKey } from "./keys/user.key";
+
+new ClaireX(3000).unlock(new userKey()).listen();
+```
+
+```json
+// package.json
+{
+  "scripts": {
+    "dev": "bun run src/index.ts"
   }
 }
 ```
 
-## Next Steps
+## Editor support (optional)
 
-- [Quick Start](/docs/getting-started/quick-start) — Build your first ClaireX application
+`.claire` files work at runtime without any editor setup, but VS Code will not resolve `.claire` imports on its own. The ClaireX extension fixes that and gives `.claire` files the full TypeScript experience.
+
+```bash
+code --install-extension packages/vscode-extension/clairex-vscode-0.1.0.vsix
+```
+
+This is optional. Nothing about running your app depends on it. See [Editor Setup](/docs/claire-files/editor-setup).
+
+## Packages
+
+| Package | Install | Purpose |
+|---|---|---|
+| `@clairex/core` | `bun add @clairex/core` | The framework |
+| `create-clairex` | `bun create clairex` | Project scaffolding |
+| `@clairex/typescript-plugin` | bundled in the extension | Resolves `.claire` imports in the editor |
+| `clairex-vscode` | `.vsix` | `.claire` editing support |
+
+## Next
+
+- [Your First API](/docs/getting-started/first-api)
+- [Project Structure](/docs/getting-started/project-structure)
