@@ -2,7 +2,7 @@
 
 ClaireX is a class-based, explicitly-typed web framework for [Bun](https://bun.sh).
 
-Everything is a class you instantiate, extend, and override. Every type is declared — nothing is inferred. Validation is built into the framework, not bolted on from a third-party library.
+Everything is a class you instantiate, extend, and override. Every type is declared, nothing is inferred. Validation is built into the framework, not bolted on from a third-party library.
 
 ```ts
 new ClaireX(3000)
@@ -50,13 +50,13 @@ export class userValidator extends ClaireValidator {
 }
 ```
 
-ClaireX adjusts enforcement based on the HTTP method — `POST` requires every field, `PATCH` treats them all as optional while still checking types and bounds. One schema, every action.
+ClaireX adjusts enforcement based on the HTTP method `POST` requires every field, `PATCH` treats them all as optional while still checking types and bounds. One schema, every action.
 
 See [Validating Input](/docs/guides/validation) for the full picture.
 
 ## The `.claire` extension
 
-ClaireX ships an optional file extension. A `.claire` file is TypeScript with extra rules enforced at load time: it must export a class, and every method must declare an explicit return type. Break a rule and the process stops before the server starts.
+ClaireX ships an optional file extension. A `.claire` file is TypeScript with extra rules enforced at load time: it must export a class, and every method with an access modifier must declare an explicit return type. Break a rule and the process stops before the server starts.
 
 ```
    ╔════════════════════════════════════════════════════════╗
@@ -72,7 +72,7 @@ See [.claire Files](/docs/claire-files/overview).
 
 ClaireX suits you if you like explicit structure, prefer classes to configuration objects, and would rather the framework enforce conventions than trust you to follow them.
 
-It is probably not for you if you want maximum flexibility, prefer functional composition, or like type inference doing the work. Those are reasonable preferences — ClaireX just makes the opposite trade.
+It is probably not for you if you want maximum flexibility, prefer functional composition, or like type inference doing the work. Those are reasonable preferences. ClaireX just makes the opposite trade.
 
 ## Next
 

@@ -86,7 +86,7 @@ ClaireX expects strict, explicit typing:
 ```ts
 // src/index.ts
 import { ClaireX } from "@clairex/core";
-import { userKey } from "./keys/user.key";
+import { userKey } from "./keys/user.key.claire";
 
 new ClaireX(3000).unlock(new userKey()).listen();
 ```

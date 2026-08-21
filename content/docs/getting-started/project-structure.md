@@ -1,6 +1,6 @@
 # Project Structure
 
-ClaireX does not enforce a directory layout, but the scaffolded project follows one that scales.
+ClaireX does not enforce a directory layout, but the scaffolded project follows one that scales and recommanded.
 
 ## The convention
 
@@ -45,7 +45,7 @@ The scaffolded project uses a `.type.ext` suffix so a file's role is obvious fro
 | `auth.guard.claire` | a ClaireMiddleware |
 | `user.ts` | a type |
 
-This is convention, not enforcement — name files however you like.
+This is convention, not enforcement, name files however you like.
 
 ## `.claire` or `.ts`?
 
@@ -74,7 +74,7 @@ new ClaireX(3000)
   .listen();
 ```
 
-Everything else — the prefix, the routes, the validation, the scoped middleware — is inside the key. Nothing about adding a resource touches existing code.
+Everything else -the prefix, the routes, the validation, the scoped middleware- is inside the key. Nothing about adding a resource touches existing code.
 
 ## Next
 

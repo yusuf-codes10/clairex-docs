@@ -27,11 +27,11 @@ new ClaireX(3000).unlock(new userKey()).listen();
 
 `ClaireX` has exactly three methods:
 
-- `unlock(key)` — mounts a resource and all its routes
-- `use(middleware)` — registers global middleware
-- `listen()` — starts the server
+- `unlock(key)`: mounts a resource and all its routes
+- `use(middleware)`: registers global middleware
+- `listen()`: starts the server
 
-Notice there are no route definitions here. You cannot write `app.get('/users', ...)` — routes live on keys. That constraint is deliberate; see [ClaireKey: Five Roles](/docs/concepts/claire-key).
+Notice there are no route definitions here. You cannot write `app.get('/users', ...)`, routes live on keys. That constraint is deliberate; see [ClaireKey: Five Roles](/docs/concepts/claire-key).
 
 `unlock()` and `use()` return `this`, so they chain.
 
@@ -46,7 +46,7 @@ export type User = {
 };
 ```
 
-Just a TypeScript type. ClaireX does not generate types from schemas or infer them — you declare the shape you expect, and the validator proves it at runtime. Two declarations, two purposes.
+Just a TypeScript type. ClaireX does not generate types from schemas or infer them, you have to declare the shape you expect, and the validator proves it at runtime. Two declarations, two purposes.
 
 ## The validator
 
@@ -99,11 +99,11 @@ export class userKey extends ClaireKey {
 }
 ```
 
-`super("/users")` sets the prefix — every route is relative to it, so `"/"` becomes `/users` and `"/:id"` becomes `/users/:id`.
+`super("/users")` sets the prefix, every route is relative to it, so `"/"` becomes `/users` and `"/:id"` becomes `/users/:id`.
 
 `register()` is called automatically when the key is constructed. Routes exist the moment you write `new userKey()`.
 
-The fourth argument to `routes()` is route-level middleware. The same validator instance is attached to both `post` and `patch` — the framework works out what each method needs.
+The fourth argument to `routes()` is route-level middleware. The same validator instance is attached to both `post` and `patch`, the framework works out what each method needs.
 
 ## Reading a request
 
@@ -120,7 +120,7 @@ private getUserById(c: ClaireContext): Response {
 
 Every handler receives a `ClaireContext` and returns a `Response`.
 
-`c.request` reads the request, `c.response` builds the reply. Path parameters come from `c.request.params` as strings — `:id` in the pattern becomes `params.id`.
+`c.request` reads the request, `c.response` builds the reply. Path parameters come from `c.request.params` as strings, `:id` in the pattern becomes `params.id`.
 
 Throwing a `ClaireException` is caught by the framework and converted into a structured JSON response. You can also return `.toResponse()` inline if you would rather stay in control.
 
