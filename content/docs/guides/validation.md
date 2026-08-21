@@ -4,9 +4,9 @@ ClaireX validates request bodies without Zod, Yup, or Joi. Validation is a class
 
 ## One validator per resource
 
-Most schema libraries push you toward one schema per action — a create schema, an update schema, a replace schema. For a ten-resource API that is roughly thirty schemas.
+Most schema libraries push you toward one schema per action, a create schema, an update schema, a replace schema. For a ten-resource API that is roughly thirty schemas.
 
-ClaireX takes a different position: **PATCH is a partial of POST.** That is REST semantics, not a framework convention. The *shape* does not change between actions — only whether fields are required.
+ClaireX takes a different position: **PATCH is a partial of POST.** That is REST semantics, not a framework convention. The *shape* does not change between actions, only whether fields are required.
 
 So you write one validator per resource, and the framework adjusts enforcement based on the HTTP method.
 
@@ -39,9 +39,9 @@ protected register(): void {
 
 | Method | Schema | `required` enforced | Notes |
 |---|---|---|---|
-| `POST` | full | ✅ yes | creating — everything needed |
-| `PUT` | full | ✅ yes | full replacement |
-| `PATCH` | partial | ❌ no | type, `min`, `max` still checked on present fields |
+| `POST` | full | yes | creating, everything needed |
+| `PUT` | full | yes | full replacement |
+| `PATCH` | partial | no | type, `min`, `max` still checked on present fields |
 | `GET` `DELETE` `HEAD` `OPTIONS` | — | — | skipped, no body to validate |
 
 ## Reading the validated body
@@ -70,13 +70,13 @@ type ValidationRule = {
 };
 ```
 
-**`type`** — checked with `typeof`.
+**`type`**: checked with `typeof`.
 
-**`required`** — the field must be present and not `null`. Enforced on POST and PUT; ignored on PATCH.
+**`required`**: the field must be present and not `null`. Enforced on POST and PUT; ignored on PATCH.
 
-**`min` / `max`** — string length or numeric value, depending on `type`. Always enforced when the field is present, on every method.
+**`min` / `max`**: string length or numeric value, depending on `type`. Always enforced when the field is present, on every method.
 
-**`immutable`** — the field can be set on create but never updated. Sending it on a PATCH returns 400.
+**`immutable`**: the field can be set on create but never updated. Sending it on a PATCH returns 400.
 
 ```ts
 {
@@ -138,17 +138,17 @@ Examples:
 ## Validators are route-level only
 
 ```ts
-// ✅ correct
+//  correct
 this.routes("post", "/", this.createUser, [new userValidator()]);
 
-// ❌ throws at startup
+// throws at startup
 super("/users", [new userValidator()]);
 
-// ❌ throws at startup
+// throws at startup
 app.use(new userValidator());
 ```
 
-The framework refuses to start if a validator is attached globally or at key level, because a validator reads the request body — and a key-level validator cannot know which route is being hit or what shape that route expects. It would also break GET routes, which have no body.
+The framework refuses to start if a validator is attached globally or at key level, because a validator reads the request body, and a key-level validator cannot know which route is being hit or what shape that route expects. It would also break GET routes, which have no body.
 
 ## Types and schemas are separate
 
@@ -164,7 +164,7 @@ export class userValidator extends ClaireValidator {
 }
 ```
 
-Two declarations, deliberately. TypeScript types vanish at runtime; validation rules only exist at runtime. Generating one from the other means inference — and no inference is the point.
+Two declarations, deliberately. TypeScript types vanish at runtime; validation rules only exist at runtime. Generating one from the other means inference, and no inference is the point.
 
 ## Not yet supported
 
