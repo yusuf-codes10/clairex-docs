@@ -10,7 +10,7 @@
         The class-based web framework for Bun.
       </h1>
       <p class="text-lg text-muted-foreground leading-relaxed">
-        Type once. Validate everywhere. No magic — just classes.
+        Type once. Validate everywhere. No magic, just classes.
       </p>
       <p class="text-sm text-muted-foreground">
         Classes you instantiate. Types you declare. Validation that's built in.
