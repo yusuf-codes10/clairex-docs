@@ -1,8 +1,10 @@
 # Defining Routes
 
-Routes live on a **ClaireKey**, never on the app. You cannot write `app.get('/users', ...)` — that is deliberate.
+Routes live on a **ClaireKey** class, never on the app. You cannot write `app.get('/users', ...)` that is deliberate.
 
-## A key
+## ClaireKey
+
+Define a Key:
 
 ```ts
 // src/keys/user.key.claire
@@ -35,6 +37,8 @@ Mount it:
 new ClaireX(3000).unlock(new userKey()).listen();
 ```
 
+## ClaireKey methods
+
 ## `super(prefix)`
 
 The prefix is prepended to every route on the key:
@@ -45,7 +49,7 @@ The prefix is prepended to every route on the key:
 | `"/:id"` | `/users/:id` |
 | `"/:id/posts"` | `/users/:id/posts` |
 
-Composition happens once, at registration — there is no runtime cost per request.
+Composition happens once, at registration, there is no runtime cost per request.
 
 ## `register()`
 
@@ -111,7 +115,7 @@ private async createUser(c: ClaireContext): Promise<Response> { ... }
 
 Both sync and async are fine. `ClaireHandler` is typed as `(c: ClaireContext) => Response | Promise<Response>`, so forgetting to return is a compile error.
 
-Handlers are usually `private` — the framework calls them, not your code.
+Handlers are usually `private`, the framework calls them, not your code.
 
 ## Route-level middleware
 
