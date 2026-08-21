@@ -10,58 +10,61 @@ const sections: SidebarSection[] = [
   {
     title: "Getting Started",
     children: [
-      { label: "Introduction", path: "/docs/getting-started/introduction" },
-      { label: "Installation", path: "/docs/getting-started/installation" },
-      { label: "Quick Start", path: "/docs/getting-started/quick-start" },
+      { label: "Introduction",     path: "/docs/getting-started/introduction" },
+      { label: "Installation",     path: "/docs/getting-started/installation" },
+      { label: "Your First API",   path: "/docs/getting-started/first-api" },
+      { label: "Project Structure",path: "/docs/getting-started/project-structure" },
     ],
   },
   {
-    title: "Core",
+    title: "Guides",
     children: [
-      { label: "ClaireX", path: "/docs/core/clairex" },
-      { label: "Routing", path: "/docs/core/routing" },
-      { label: "Context", path: "/docs/core/context" },
-      { label: "Request", path: "/docs/core/request" },
-      { label: "Response", path: "/docs/core/response" },
+      { label: "Defining Routes",      path: "/docs/guides/routes" },
+      { label: "Reading Requests",     path: "/docs/guides/requests" },
+      { label: "Sending Responses",    path: "/docs/guides/responses" },
+      { label: "Validating Input",     path: "/docs/guides/validation" },
+      { label: "Partial Updates",      path: "/docs/guides/partial-updates" },
+      { label: "Writing Middleware",   path: "/docs/guides/middleware" },
+      { label: "Protecting Routes",    path: "/docs/guides/auth" },
+      { label: "Handling Errors",      path: "/docs/guides/errors" },
+      { label: "Enabling CORS",        path: "/docs/guides/cors" },
     ],
   },
   {
-    title: "Keys",
+    title: ".claire Files",
     children: [
-      { label: "Overview", path: "/docs/keys/overview" },
-      { label: "Route Registration", path: "/docs/keys/route-registration" },
-      { label: "Scoped Middleware", path: "/docs/keys/scoped-middleware" },
+      { label: "Overview",      path: "/docs/claire-files/overview" },
+      { label: "Rules",         path: "/docs/claire-files/rules" },
+      { label: "Editor Setup",  path: "/docs/claire-files/editor-setup" },
     ],
   },
   {
-    title: "Middleware",
+    title: "Concepts",
     children: [
-      { label: "Overview", path: "/docs/middleware/overview" },
-      { label: "Before & After", path: "/docs/middleware/before-after" },
-      { label: "Short-Circuiting", path: "/docs/middleware/short-circuiting" },
+      { label: "Architecture",              path: "/docs/concepts/architecture" },
+      { label: "ClaireKey: Five Roles",     path: "/docs/concepts/claire-key" },
+      { label: "The Middleware Onion",      path: "/docs/concepts/middleware-onion" },
+      { label: "Why Explicit Types",        path: "/docs/concepts/explicit-types" },
     ],
   },
   {
-    title: "Validation",
+    title: "API Reference",
     children: [
-      { label: "Overview", path: "/docs/validation/overview" },
-      { label: "Rules & Schema", path: "/docs/validation/rules" },
-    ],
-  },
-  {
-    title: "Exceptions",
-    children: [
-      { label: "ClaireException", path: "/docs/exceptions/claire-exception" },
-      { label: "Error Handling", path: "/docs/exceptions/error-handling" },
-    ],
-  },
-  {
-    title: "Helpers",
-    children: [
-      { label: "ClaireLogger", path: "/docs/middleware/claire-logger" },
+      { label: "ClaireX",           path: "/docs/api/clairex" },
+      { label: "ClaireKey",         path: "/docs/api/claire-key" },
+      { label: "ClaireContext",     path: "/docs/api/claire-context" },
+      { label: "ClaireRequest",     path: "/docs/api/claire-request" },
+      { label: "ClaireResponse",    path: "/docs/api/claire-response" },
+      { label: "ClaireMiddleware",  path: "/docs/api/claire-middleware" },
+      { label: "ClaireValidator",   path: "/docs/api/claire-validator" },
+      { label: "ClaireException",   path: "/docs/api/claire-exception" },
+      { label: "ClaireUtil",        path: "/docs/api/claire-util" },
+      { label: "Built-in Middleware", path: "/docs/api/built-in-middleware" },
+      { label: "Types",             path: "/docs/api/types" },
     ],
   },
 ];
+
 
 const openSections = ref<Record<number, boolean>>({ 0: true, 1: true });
 
