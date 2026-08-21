@@ -4,9 +4,13 @@ Everything about the incoming request is on `c.request`.
 
 ## Path parameters
 
+Define a dynamique id:
+
 ```ts
 this.routes("get", "/:id", this.getUserById);
 ```
+
+Read that id from `c.request.params`:
 
 ```ts
 private getUserById(c: ClaireContext): Response {
@@ -16,20 +20,20 @@ private getUserById(c: ClaireContext): Response {
 }
 ```
 
-Always strings — convert as needed. URL segments carry no type information.
+Always strings, convert as needed. URL segments carry no type information.
 
 ## Query strings
 
 Two getters, depending on whether you care about repeated keys.
 
-**`query`** — single value per key, last one wins:
+**`query`**: single value per key, last one wins:
 
 ```ts
 // GET /users?page=2&limit=10
 const { page, limit } = c.request.query;   // { page: "2", limit: "10" }
 ```
 
-**`queries`** — all values, as arrays:
+**`queries`**: all values, as arrays:
 
 ```ts
 // GET /users?tag=admin&tag=editor
@@ -44,7 +48,7 @@ c.request.headers.has("authorization");    // boolean
 c.request.headers.all();                   // Record<string, string>
 ```
 
-Case-insensitive — `Authorization` and `authorization` both work. Values are read lazily, so `get()` does not build the whole object.
+Case-insensitive, `Authorization` and `authorization` both work. Values are read lazily, so `get()` does not build the whole object.
 
 ## Body
 
@@ -64,19 +68,22 @@ const data = await c.request.json();   // Promise<unknown>
 const text = await c.request.text();   // Promise<string>
 ```
 
-`json()` returns `unknown` on purpose — runtime data has no compile-time type. Casting it with `as` is a claim the compiler cannot check. Use a validator instead and get a typed body backed by runtime proof.
+`json()` returns `unknown` on purpose, runtime data has no compile-time type. Casting it with `as` is a claim the compiler cannot check. Use a validator instead and get a typed body backed by runtime proof.
 
 ::alert{type="warning"}
-The body is a one-shot stream. Reading it twice throws. If a validator is attached to the route, it has already consumed the body — read the result via `valid<T>()` or `patched<T>()`, not `json()`.
+The body is a one-shot stream. Reading it twice throws. If a validator is attached to the route, it has already consumed the body, read the result via `valid<T>()` or `patched<T>()`, not `json()`.
 ::
 
 ## Method and URL
+
+Some useful request methods:
 
 ```ts
 c.request.method;       // "GET" | "POST" | ...
 c.request.pathname;     // "/users/123"
 c.request.url;          // native URL object
 ```
+Some url methods:
 
 ```ts
 c.request.url.origin;   // "http://localhost:3000"
