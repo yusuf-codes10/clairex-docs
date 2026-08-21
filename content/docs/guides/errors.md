@@ -112,7 +112,7 @@ The framework does not fail silently. If something is wired wrong, it says so.
 
 ## Why no exception subclasses
 
-`NotFoundException`, `ValidationException` and friends were considered and rejected. Status codes are universal — every developer knows 404. Wrapping them in class names adds a layer to learn without adding information.
+`NotFoundException`, `ValidationException` and friends were considered and rejected. Status codes are universal, every developer knows 404. Wrapping them in class names adds a layer to learn without adding information.
 
 ```ts
 throw new ClaireException(404, "User not found!");
