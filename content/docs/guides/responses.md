@@ -35,7 +35,7 @@ return c.response.redirect("/login");            // 302
 return c.response.redirect("/new-home", 301);    // permanent
 ```
 
-Sets `Location` and sends a null body. Status is constrained to `301 | 302` — no arbitrary codes.
+Sets `Location` and sends a null body. Status is constrained to `301 | 302`, no arbitrary codes.
 
 ## Status codes
 
@@ -50,7 +50,7 @@ The most recent status is readable via `c.response.status`, though you rarely ne
 
 ## Errors
 
-For error responses, prefer `ClaireException` over a hand-built JSON body — you get a consistent shape and a styled terminal log:
+For error responses, prefer `ClaireException` over a hand-built JSON body, you get a consistent shape and a styled terminal log:
 
 ```ts
 // throw — the framework catches and converts it
