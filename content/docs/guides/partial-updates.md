@@ -30,7 +30,7 @@ The client sent only `age`. So `name` is `undefined`, and `found.name = undefine
 
 ## Why it happened
 
-`c.valid<User>()` claimed to return a `User` — an object where `name` is a `string`. At runtime it returned an object with no `name` at all.
+`c.valid<User>()` claimed to return a `User`, an object where `name` is a `string`. At runtime it returned an object with no `name` at all.
 
 That is a **type lie**, and the framework cannot catch it by inspecting the generic, because *you* supply the generic. Nothing stopped you writing `<User>` on a route that only ever receives partial bodies.
 
@@ -50,7 +50,7 @@ So the unsafe assignment now fails to compile:
 ```ts
 const patch = c.patched<User>();
 found.name = patch.name;
-// ❌ Type 'string | undefined' is not assignable to type 'string'
+// Type 'string | undefined' is not assignable to type 'string'
 ```
 
 That error is the framework doing its job. The bug is caught while you type, not after it has eaten production data.
@@ -136,7 +136,7 @@ curl -X PATCH http://localhost:3000/users/1 \
 # {"exception":"Validation failed!: \"id\" cannot be updated"}
 ```
 
-The request is **rejected**, not silently ignored — the client is told they did something wrong. And because immutable fields are stripped from the partial schema, `patch.id` does not exist for a handler to assign even by accident.
+The request is **rejected**, not silently ignored, the client is told they did something wrong. And because immutable fields are stripped from the partial schema, `patch.id` does not exist for a handler to assign even by accident.
 
 ## What PATCH still validates
 
