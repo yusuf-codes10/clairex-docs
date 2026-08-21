@@ -35,7 +35,7 @@ All four arguments are required and positional.
 app.use(new ClaireCors("*", ["Content-Type"], ["GET", "POST", "PATCH", "DELETE"], []));
 ```
 
-`"*"` is fine locally. In production, name your origin — a wildcard cannot be combined with credentialed requests.
+`"*"` is fine locally. In production, name your origin, a wildcard cannot be combined with credentialed requests.
 
 ## Preflight
 
@@ -45,17 +45,17 @@ Browsers send an `OPTIONS` request before certain cross-origin calls. `ClaireCor
 
 ## Actual responses
 
-For non-preflight requests, `after()` adds the CORS headers to whatever your handler returned. Since `after()` runs on the way out, every response gets them — including error responses.
+For non-preflight requests, `after()` adds the CORS headers to whatever your handler returned. Since `after()` runs on the way out, every response gets them, including error responses.
 
 ## Register globally
 
 CORS is not a per-route concern:
 
 ```ts
-// ✅
+//
 app.use(new ClaireCors(...));
 
-// ⚠️ works, but you probably don't want this
+// works, but you probably don't want this
 this.routes("get", "/", this.getUsers, [new ClaireCors(...)]);
 ```
 
@@ -63,7 +63,7 @@ At route level the preflight for *other* routes goes unanswered, and browsers wi
 
 ## Ordering
 
-Register CORS first, so its `after()` runs last and applies headers to everything — including responses produced by short-circuiting middleware further in:
+Register CORS first, so its `after()` runs last and applies headers to everything, including responses produced by short-circuiting middleware further in:
 
 ```ts
 app.use(new ClaireCors(...));
@@ -72,11 +72,11 @@ app.use(new rateLimiter());
 
 ## Troubleshooting
 
-**"No 'Access-Control-Allow-Origin' header"** — the middleware is not registered globally, or the origin does not match exactly. Scheme and port count: `http://localhost:3000` ≠ `http://localhost:8080`.
+**"No 'Access-Control-Allow-Origin' header"**, the middleware is not registered globally, or the origin does not match exactly. Scheme and port count: `http://localhost:3000` ≠ `http://localhost:8080`.
 
-**Preflight returns 404** — `ClaireCors` is registered at route level instead of globally, so `OPTIONS` fell through to route matching.
+**Preflight returns 404**, `ClaireCors` is registered at route level instead of globally, so `OPTIONS` fell through to route matching.
 
-**Custom header rejected** — add it to `allowedHeaders`.
+**Custom header rejected** add it to `allowedHeaders`.
 
 ## Next
 
