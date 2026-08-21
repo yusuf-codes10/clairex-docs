@@ -7,11 +7,11 @@
     <NuxtLink :to="'/'">
       <logo width="120" />
     </NuxtLink>
-    <ul class="inline-flex gap-6 text-sm font-medium text-muted-foreground">
+    <!-- <ul class="inline-flex gap-6 text-sm font-medium text-muted-foreground">
       <li class="hover:text-primary cursor-pointer transition-colors">Docs</li>
       <li class="hover:text-primary cursor-pointer transition-colors">Test</li>
       <li class="hover:text-primary cursor-pointer transition-colors">More</li>
-    </ul>
+    </ul> -->
     <a href="https://github.com/yusuf-codes10/clairex-core" target="_blank">
       <Icon
         name="lucide:github"
