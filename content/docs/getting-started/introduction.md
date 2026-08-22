@@ -6,7 +6,6 @@ Everything is a class you instantiate, extend, and override. Every type is decla
 
 ```ts
 new ClaireX(3000)
-  .unlock(new userKey())
   .listen();
 ```
 
