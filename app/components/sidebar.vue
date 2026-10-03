@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
+import { useRoute } from 'vue-router';
 
 type SidebarSection = {
   title: string;
@@ -14,53 +15,6 @@ const sections: SidebarSection[] = [
       { label: "Installation",     path: "/docs/getting-started/installation" },
       { label: "Your First API",   path: "/docs/getting-started/first-api" },
       { label: "Project Structure",path: "/docs/getting-started/project-structure" },
-    ],
-  },
-  {
-    title: "Guides",
-    children: [
-      { label: "Defining Routes",      path: "/docs/guides/routes" },
-      { label: "Reading Requests",     path: "/docs/guides/requests" },
-      { label: "Sending Responses",    path: "/docs/guides/responses" },
-      { label: "Validating Input",     path: "/docs/guides/validation" },
-      { label: "Partial Updates",      path: "/docs/guides/partial-updates" },
-      { label: "Writing Middleware",   path: "/docs/guides/middleware" },
-      { label: "Protecting Routes",    path: "/docs/guides/auth" },
-      { label: "Handling Errors",      path: "/docs/guides/errors" },
-      { label: "Enabling CORS",        path: "/docs/guides/cors" },
-    ],
-  },
-  {
-    title: ".claire Files",
-    children: [
-      { label: "Overview",      path: "/docs/claire-files/overview" },
-      { label: "Rules",         path: "/docs/claire-files/rules" },
-      { label: "Editor Setup",  path: "/docs/claire-files/editor-setup" },
-    ],
-  },
-  {
-    title: "Concepts",
-    children: [
-      { label: "Architecture",              path: "/docs/concepts/architecture" },
-      { label: "ClaireKey: Five Roles",     path: "/docs/concepts/claire-key" },
-      { label: "The Middleware Onion",      path: "/docs/concepts/middleware-onion" },
-      { label: "Why Explicit Types",        path: "/docs/concepts/explicit-types" },
-    ],
-  },
-  {
-    title: "API Reference",
-    children: [
-      { label: "ClaireX",           path: "/docs/api/clairex" },
-      { label: "ClaireKey",         path: "/docs/api/claire-key" },
-      { label: "ClaireContext",     path: "/docs/api/claire-context" },
-      { label: "ClaireRequest",     path: "/docs/api/claire-request" },
-      { label: "ClaireResponse",    path: "/docs/api/claire-response" },
-      { label: "ClaireMiddleware",  path: "/docs/api/claire-middleware" },
-      { label: "ClaireValidator",   path: "/docs/api/claire-validator" },
-      { label: "ClaireException",   path: "/docs/api/claire-exception" },
-      { label: "ClaireUtil",        path: "/docs/api/claire-util" },
-      { label: "Built-in Middleware", path: "/docs/api/built-in-middleware" },
-      { label: "Types",             path: "/docs/api/types" },
     ],
   },
 ];
@@ -87,7 +41,7 @@ watch(
 
 <template>
   <aside
-    class="fixed inset-y-0 left-0 z-40 w-72 max-w-[85vw] overflow-y-auto border-r border-border bg-background px-4 py-6 transition-transform duration-200 ease-out lg:sticky lg:inset-y-auto lg:top-13.25 lg:z-auto lg:h-[calc(100vh_-_3.3125rem)] lg:w-64 lg:max-w-none lg:shrink-0 lg:translate-x-0"
+    class="fixed inset-y-0 left-0 z-40 w-72 max-w-[85vw] overflow-y-auto border-r border-border bg-background px-4 py-6 transition-transform duration-200 ease-out lg:sticky lg:inset-y-auto lg:top-13.25 lg:z-auto lg:h-[calc(100vh-3.3125rem)] lg:w-64 lg:max-w-none lg:shrink-0 lg:translate-x-0"
     :class="open ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
   >
     <!-- Drawer header, mobile only -->
