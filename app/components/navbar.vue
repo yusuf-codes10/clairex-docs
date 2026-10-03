@@ -1,4 +1,8 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useThemeStore } from '#imports';
+
+const themeStore = useThemeStore();
+</script>
 
 <template>
   <nav
@@ -12,12 +16,27 @@
       <li class="hover:text-primary cursor-pointer transition-colors">Test</li>
       <li class="hover:text-primary cursor-pointer transition-colors">More</li>
     </ul> -->
-    <a href="https://github.com/yusuf-codes10/clairex-core" target="_blank">
-      <Icon
-        name="lucide:github"
-        size="22"
+
+    <div class="flex gap-2">
+
+      <button
+        aria-label="Toggle theme"
         class="cursor-pointer text-muted-foreground hover:text-primary transition-colors"
-      />
-    </a>
+        @click="themeStore.toggleTheme()"
+      >
+        <!-- shown in light mode -->
+        <Icon name="lucide:moon" size="22" class="block dark:hidden" />
+        <!-- shown in dark mode -->
+        <Icon name="lucide:sun" size="22" class="hidden dark:block" />
+      </button>
+  
+      <a href="https://github.com/yusuf-codes10/clairex-core" target="_blank">
+        <Icon
+          name="lucide:github"
+          size="22"
+          class="cursor-pointer text-muted-foreground hover:text-primary transition-colors"
+        />
+      </a>
+    </div>
   </nav>
 </template>
