@@ -1,3 +1,3 @@
 # Introduction
 
-ClaireX is a Bun, Typescript Framework
+ClaireX is a Class-based, Bun-native, Explicitly typed Framework
