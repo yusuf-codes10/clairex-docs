@@ -1,7 +1,7 @@
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineNuxtConfig({
-  modules: ["@nuxt/content", "@nuxt/ui"],
+  modules: ["@nuxt/content", "@nuxt/ui", "@pinia/nuxt"],
   devtools: { enabled: true },
   compatibilityDate: "2024-04-03",
   vite: {
